@@ -1,0 +1,29 @@
+%YAML:1.0
+
+---
+
+#источник видеопотока
+video_source: 0
+
+#навигация по опорным маркерам
+use_aruco: true
+
+#только обнаружение маркеров - 0
+#навигация по одному опорному маркеру - 1
+#навигация по полю маркеров - 2
+#использование slam алгоритма для формирования поля маркеров - 3
+aruco_navigation_type: 2
+
+#путь к конфигурации опорного маркера
+marker_config_path : /home/argus/opencv_tutorials/config/single_marker.yaml
+
+#путь к конфигурации поля маркеров
+board_config_path: /home/argus/opencv_tutorials/config/board_config.yaml
+
+#файл в который будет произвелена запись параметров поля маркеров полученная в результате работы slam алгоритма
+marker_slam_config: /path
+
+#путь к файлу колибровок камеры
+camera_calibration_path: /home/argus/catkin_ws/src/Lander3000/config/new_calib.yaml
+
+use_flow: false
