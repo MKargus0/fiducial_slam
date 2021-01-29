@@ -16,7 +16,7 @@ int main()
     // // cv::namedWindow("Display Image", cv::WINDOW_AUTOSIZE );
     // // cv::imshow("Display Image", markernav.image);
 
-    string config = "/home/argus/opencv_tutorials/config/config.yaml";
+    string config = "/home/argus/visual_navigation/config/config.yaml";
     visual_navigation vis_nav(config);
 
     while(true)

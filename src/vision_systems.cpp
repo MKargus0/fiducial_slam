@@ -9,7 +9,7 @@ vision_system::vision_system(string video_source)
     // else {inputVideo.open(video_source);}
     if(video_source != "none")
     {
-        input_video.open(4);
+        input_video.open(0);
         input_video.set(cv::CAP_PROP_FRAME_WIDTH,1280);
         input_video.set(cv::CAP_PROP_FRAME_HEIGHT,960);
     }
@@ -405,7 +405,14 @@ void navigate_board_marker::add_board_config(string filename)
 visual_navigation::visual_navigation(string config_file)
 {
     config = config_file;
-    cv::FileStorage fs(config_file, cv::FileStorage::READ);
+
+    cout << config_file << endl;
+    cv::FileStorage fs(config, cv::FileStorage::READ);
+    //fs = new cv::FileStorage(config_file, cv::FileStorage::READ);
+    //fs.open(config_file,cv::FileStorage::READ);
+    //fs.open(config_file, cv::FileStorage::READ);
+   
+    cout << "get data" << endl;
 
     fs["use_aruco"] >> use_aruco;
     fs["aruco_navigation_type"] >> aruco_navigation_type;

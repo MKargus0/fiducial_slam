@@ -7,6 +7,7 @@
 #include <iostream>
 #include <Eigen/Geometry>
 #include <cmath>
+#include <yaml-cpp/yaml.h>
 
 
 #define VISUALZATION

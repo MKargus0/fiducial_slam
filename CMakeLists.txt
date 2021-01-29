@@ -14,7 +14,7 @@ add_library(vis SHARED src/vision_systems.cpp)
 
 add_executable(video_cap src/video_cap.cpp)
 
-target_link_libraries(video_cap vis ${OpenCV_LIBS} -lopencv_aruco )
+target_link_libraries(video_cap vis ${OpenCV_LIBS} -lopencv_aruco yaml-cpp)
 
 
 
