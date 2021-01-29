@@ -1,0 +1,4 @@
+/home/argus/visual_navigation/build/CMakeFiles/rebuild_cache.dir
+/home/argus/visual_navigation/build/CMakeFiles/video_cap.dir
+/home/argus/visual_navigation/build/CMakeFiles/edit_cache.dir
+/home/argus/visual_navigation/build/CMakeFiles/vis.dir

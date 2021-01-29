@@ -1,0 +1,1 @@
+/usr/bin/x86_64-linux-gnu-g++-7 -fPIC -g -shared -Wl,-soname,libvis.so -o libvis.so CMakeFiles/vis.dir/src/vision_systems.cpp.o 
