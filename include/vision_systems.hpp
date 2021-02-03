@@ -8,6 +8,7 @@
 #include <Eigen/Geometry>
 #include <cmath>
 #include <yaml-cpp/yaml.h>
+#include <opencv2/core/persistence.hpp>
 
 
 #define VISUALZATION
@@ -17,7 +18,7 @@ using namespace std;
 class vision_system
 {
 public:
-    vision_system(string video_source);
+    vision_system(string video_source ,int width,int height);
     void get_camera_calibration(string filename);
     cv::VideoCapture input_video;
     cv::Mat image;
@@ -25,7 +26,10 @@ public:
     cv::Mat camera_matrix;
     cv::Mat dist_coeffs;
     bool use_video_input = true;
-   
+    cv::Vec3d rvec_to_euler(cv::Vec3d rvec);
+    Eigen::Quaterniond euler_to_quat(cv::Vec3d angles);
+    cv::Vec3d vision_pose_transform(cv::Vec3d tvec,cv::Vec3d rvec);
+    
     
 
 };
@@ -34,13 +38,16 @@ class aruco_detector : public vision_system
 {
     public:
         int marker_count;
+        bool is_nav;
         cv::Ptr<cv::aruco::DetectorParameters> parameters;
         cv::Ptr<cv::aruco::Dictionary> dictionary;
-        std::vector<cv::Vec3d> rvecs, tvecs; 
+        std::vector<cv::Vec3d> rvecs, tvecs;
+        cv::Vec3d rvec ,tvec;
+        cv::Vec3d euler_angles;
         // rvec вектор ориентации маркера относительно камеры
         // tvec - положение маркера относительно камеры
 
-        aruco_detector(int marker_bit_size,int dict_size,string video_source);
+        aruco_detector(int marker_bit_size,int dict_size,string video_source,int width,int height);
         //aruco_detector(int marker_bit_size =4,int dict_size=50,string video_source="0");
         ~aruco_detector();
         void set_dict(int marker_bit_size,int dict_size); // устанавливаем словарь маркеров
@@ -57,7 +64,7 @@ class aruco_detector : public vision_system
 class navigate_single_marker : public aruco_detector
 {
     public:
-        navigate_single_marker(string filename,string video_source);
+        navigate_single_marker(string filename,string video_source,int width,int height);
         void estimate_pose();
         void setup(string filename);
     private:
@@ -69,10 +76,17 @@ class navigate_single_marker : public aruco_detector
 class navigate_board_marker : public aruco_detector
 {
     public:
-        navigate_board_marker(string filename,string video_source);
+        navigate_board_marker(string filename,string video_source,int width,int height);
         void estimate_pose(int board_id);
         void setup(string filename);
         void marker_detect();
+
+        void draw_board(cv::aruco::Board *_board, cv::Size outSize, cv::OutputArray _img, int marginSize,
+                     int borderBits);
+
+        void draw_planar_board(const cv::Ptr<cv::aruco::Board> &_board, cv::Size outSize, cv::OutputArray _img, int marginSize,
+                     int borderBits);
+
 
     private:
         int board_count;
@@ -91,8 +105,6 @@ class navigate_board_marker : public aruco_detector
         std::vector<float> marker_params;
         std::vector<std::vector<cv::Point2f>> markerCorners;
         std::vector <cv::Ptr<cv::aruco::Dictionary>> dictionary_list;
-        cv::Vec3d rvec;
-        cv::Vec3d tvec;
         int board_detected_num;
         
         #ifdef VISUALZATION
@@ -123,18 +135,27 @@ class visual_navigation
 {
     public:
         visual_navigation(string config_file);
-        
         void aruco_nav_do_step();
         void aruco_nav_do_step(cv::Mat &input_image);
         void flow_nav_do_step();
+        bool nav_status;
+        Eigen::Quaterniond orientation;
+        cv::Vec3d translation;
+        cv::Vec3d vision_pose;
+
+        
+        
 
     private:
         
+        int width;
+        int height;
         void aruco_setup();
         void single_marker_nav_setup();
         void marker_board_nav_setup();
         void marker_slam_nav_setup();
         void flow_setup();
+        void set_navigation_data();
 
         // void update_image();
         // void update_image(cv::Mat input_image);

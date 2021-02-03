@@ -4,15 +4,17 @@
 
 #источник видеопотока
 video_source: 0
+width: 320
+height: 240
 
 #навигация по опорным маркерам
-use_aruco: true
+use_aruco: yes
 
 #только обнаружение маркеров - 0
 #навигация по одному опорному маркеру - 1
 #навигация по полю маркеров - 2
 #использование slam алгоритма для формирования поля маркеров - 3
-aruco_navigation_type: 1
+aruco_navigation_type: 2
 
 #путь к конфигурации опорного маркера
 marker_config_path : /home/argus/visual_navigation/config/single_marker.yaml
@@ -24,6 +26,6 @@ board_config_path: /home/argus/visual_navigation/config/board_config.yaml
 marker_slam_config: /path
 
 #путь к файлу колибровок камеры
-camera_calibration_path: /home/argus/catkin_ws/src/Lander3000/config/new_calib.yaml
+camera_calibration_path: /home/argus/catkin_ws/src/pathfinder/config/ost.yaml
 
 use_flow: false

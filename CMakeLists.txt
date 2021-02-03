@@ -10,7 +10,7 @@ include_directories(include ${OpenCV_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} )
 #set(HEADERS include/vision_systems.hpp)
 
 #set(SOURCE_LIB vision_systems.cpp)	
-add_library(vis SHARED src/vision_systems.cpp)
+add_library(vis STATIC src/vision_systems.cpp)
 
 add_executable(video_cap src/video_cap.cpp)
 
