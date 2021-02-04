@@ -3,12 +3,15 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/core.hpp>     // Basic OpenCV structures (cv::Mat)
 #include <opencv2/aruco.hpp>
+
+
+#include <aruco_custom_tools.hpp>
 #include <fstream>
 #include <iostream>
 #include <Eigen/Geometry>
 #include <cmath>
 #include <yaml-cpp/yaml.h>
-#include <opencv2/core/persistence.hpp>
+//#include <opencv2/core/persistence.hpp>
 
 
 #define VISUALZATION
@@ -57,6 +60,7 @@ class aruco_detector : public vision_system
         std::vector<int> ids;
         std::vector<std::vector<cv::Point2f> > corners;
 
+
     private:
 
 };
@@ -81,11 +85,7 @@ class navigate_board_marker : public aruco_detector
         void setup(string filename);
         void marker_detect();
 
-        void draw_board(cv::aruco::Board *_board, cv::Size outSize, cv::OutputArray _img, int marginSize,
-                     int borderBits);
-
-        void draw_planar_board(const cv::Ptr<cv::aruco::Board> &_board, cv::Size outSize, cv::OutputArray _img, int marginSize,
-                     int borderBits);
+        
 
 
     private:
@@ -106,6 +106,9 @@ class navigate_board_marker : public aruco_detector
         std::vector<std::vector<cv::Point2f>> markerCorners;
         std::vector <cv::Ptr<cv::aruco::Dictionary>> dictionary_list;
         int board_detected_num;
+
+
+        std::vector<std::vector<std::vector<cv::Point2f> >> corners_list;
         
         #ifdef VISUALZATION
             cv::Mat  image_copy;

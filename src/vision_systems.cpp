@@ -22,98 +22,6 @@ vision_system::vision_system(string video_source,int width,int height)
 
 }
 
-void navigate_board_marker::draw_planar_board(const cv::Ptr<cv::aruco::Board> &_board, cv::Size outSize, cv::OutputArray _img, int marginSize,
-                     int borderBits)
-{
-    draw_board(_board, outSize, _img, marginSize, borderBits);
-}
-
-void navigate_board_marker::draw_board(cv::aruco::Board *_board, cv::Size outSize, cv::OutputArray _img, int marginSize,
-                     int borderBits)
-{
-    //CV_Assert(!outSize.empty());
-    CV_Assert(marginSize >= 0);
-    // cv::Mat _img;
-    _img.create(outSize, CV_8UC1);
-    cv::Mat out = _img.getMat();
-    out.setTo(cv::Scalar::all(255));
-    out.adjustROI(-marginSize, -marginSize, -marginSize, -marginSize);
-    
-    // calculate max and min values in XY plane
-    CV_Assert(_board->objPoints.size() > 0);
-    float minX, maxX, minY, maxY;
-    minX = maxX = _board->objPoints[0][0].x;
-    minY = maxY = _board->objPoints[0][0].y;
-    for(unsigned int i = 0; i < _board->objPoints.size(); i++) {
-        for(int j = 0; j < 4; j++) {
-                {
-                    minX = cv::min(minX, _board->objPoints[i][j].x);
-                    maxX = cv::max(maxX, _board->objPoints[i][j].x);
-                    minY = cv::min(minY, _board->objPoints[i][j].y);
-                    maxY = cv::max(maxY, _board->objPoints[i][j].y);
-                }
-        }
-    }
-    float sizeX = maxX - minX;
-    float sizeY = maxY - minY;
-
-    // proportion transformations
-    float xReduction = sizeX / float(out.cols);
-    float yReduction = sizeY / float(out.rows);
-
-    if(xReduction > yReduction) {
-        int nRows = int(sizeY / xReduction);
-        int rowsMargins = (out.rows - nRows) / 2;
-        out.adjustROI(-rowsMargins, -rowsMargins, 0, 0);
-    } else {
-        int nCols = int(sizeX / yReduction);
-        int colsMargins = (out.cols - nCols) / 2;
-        out.adjustROI(0, 0, -colsMargins, -colsMargins);
-    }
-
-    // now paint each marker
-    cv::aruco::Dictionary &dictionary = *(_board->dictionary);
-    cv::Mat marker;
-    cv::Point2f outCorners[3];
-    cv::Point2f inCorners[3];
-
-    for(unsigned int m = 0; m < _board->objPoints.size(); m++) {
-        // transform corners to markerZone coordinates
-        for(int j = 0; j < 3; j++) {
-            cv::Point2f pf = cv::Point2f(_board->objPoints[m][j].x, _board->objPoints[m][j].y);
-            // move top left to 0, 0
-            pf -= cv::Point2f(minX, minY);
-            pf.x = pf.x / sizeX * float(out.cols);
-            pf.y = (1.0f - pf.y / sizeY) * float(out.rows);
-            outCorners[j] = pf;
-        }
-
-        // get marker
-        cv::Size dst_sz(outCorners[2] - outCorners[0]); // assuming CCW order
-        dst_sz.width = dst_sz.height = std::min(dst_sz.width, dst_sz.height); //marker should be square
-        dictionary.drawMarker(_board->ids[m], dst_sz.width, marker, borderBits);
-
-        if((outCorners[0].y == outCorners[1].y) && (outCorners[1].x == outCorners[2].x)) {
-            // marker is aligned to image axes
-            marker.copyTo(out(cv::Rect(outCorners[0], dst_sz)));
-            continue;
-        }
-
-        // interpolate tiny marker to marker position in markerZone
-        inCorners[0] = cv::Point2f(-0.5f, -0.5f);
-        inCorners[1] = cv::Point2f(marker.cols - 0.5f, -0.5f);
-        inCorners[2] = cv::Point2f(marker.cols - 0.5f, marker.rows - 0.5f);
-
-        // remove perspective
-        cv::Mat transformation = cv::getAffineTransform(inCorners, outCorners);
-        // warpAffine(marker, out, transformation, out.size(), INTER_LINEAR,
-        //                 BORDER_TRANSPARENT);
-    }
-
-
-
-}
-
 cv::Vec3d vision_system::rvec_to_euler(cv::Vec3d rvec)
 {
     cv::Mat rodr;
@@ -387,6 +295,8 @@ void navigate_board_marker::marker_detect()
         #ifdef VISUALZATION
             image.copyTo(image_copy);
         #endif
+        
+        cv::Mat objPoints, imgPoints;// new
 
         board_detected_num = 0;
         for(int i=0;i<board_list.size();i++)
@@ -396,11 +306,25 @@ void navigate_board_marker::marker_detect()
             detectMarkers(image,dictionary_list[i], corners, ids, parameters);
             if (ids.size() > 0)
             {   
+
                 
                 #ifdef VISUALZATION
                     cv::aruco::drawDetectedMarkers(image_copy,corners,ids);
                 #endif
-                estimate_pose(i);
+
+                //cout << board_list[i]->ids[0] << endl;
+                get_board_object_and_image_points(board_list[i], corners, ids, objPoints, imgPoints);
+                //cv::aruco::getBoardObjectAndImagePoints()
+                if(objPoints.total() == 0) // 0 of the detected markers in board
+                    //return 0;
+                    {
+                      //printf("text s cartimkoy\n");   
+                    }
+                else
+                {
+                    board_detected_num++;
+                }
+                // estimate_pose(i);
                 
                 
             }
@@ -409,15 +333,20 @@ void navigate_board_marker::marker_detect()
         }
         if(board_detected_num > 0)
         {   
-            rvec = {0,0,0};
-            tvec = {0,0,0};
-            for(int i=0;i<board_detected_num;i++)
-            {
-                rvec += rvecs[i];
-                tvec += tvecs[i];
-            }
-            rvec /= board_detected_num;
-            tvec /= board_detected_num;
+            //rvec = {0,0,0};
+            //tvec = {0,0,0};
+            bool useExtrinsicGuess = false;
+            cv::solvePnP(objPoints, imgPoints, camera_matrix, dist_coeffs, rvec, tvec, useExtrinsicGuess);
+            //(int)objPoints.total() / 4;
+            // rvec = {0,0,0};
+            // tvec = {0,0,0};
+            // for(int i=0;i<board_detected_num;i++)
+            // {
+            //     rvec += rvecs[i];
+            //     tvec += tvecs[i];
+            // }
+            // rvec /= board_detected_num;
+            // tvec /= board_detected_num;
             is_nav = true;
             #ifdef VISUALZATION
                 cv::aruco::drawAxis(image_copy, camera_matrix, dist_coeffs, rvec, tvec, 0.4);
@@ -433,6 +362,14 @@ void navigate_board_marker::marker_detect()
             //cv::resizeWindow("out", 1280, 960);
             cv::namedWindow("out", cv::WINDOW_AUTOSIZE );
             cv::imshow("out", image_copy);
+
+            // cv::Mat imageUndistorted; // Will be the undistorted version of the above image.
+
+            // cv::undistort(image, imageUndistorted, camera_matrix, dist_coeffs);
+
+            // cv::namedWindow("out_dist", cv::WINDOW_AUTOSIZE );
+            // cv::imshow("out_dist", imageUndistorted);
+
         #endif
         //cout<<"ok";
     }
@@ -536,8 +473,12 @@ void navigate_board_marker::setup(string filename)
         board_list[i] = cv::aruco::Board::create(rejected_candidates[i]
                                                 ,dictionary,marker_ids[i]);
 
-        board = cv::aruco::Board::create(rejected_candidates[i]
-                                                ,dictionary,marker_ids[i]);
+        std::vector<std::vector<cv::Point3f>> rc = rejected_candidates[i];
+        std::vector <int> mi = marker_ids[i];
+        //board = cv::makePtr<cv::aruco::Board>();
+        board = cv::aruco::Board::create(rc,dictionary,mi);
+
+        cout<< board->ids.size() << endl;
         // #ifdef VISUALZATION
         cv::Mat image_board;
         //     draw_planar_board(board_list[i],cv::Size(800, 800),board_img,50,1);

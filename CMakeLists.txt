@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 project( vision_navigation )
-find_package( OpenCV REQUIRED )
+find_package( OpenCV 3 REQUIRED )
 find_package (Eigen3  REQUIRED)
 #link_directories("/usr/lib/" "/usr/include")
 include_directories(${EIGEN3_INCLUDE_DIR})
@@ -10,7 +10,7 @@ include_directories(include ${OpenCV_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} )
 #set(HEADERS include/vision_systems.hpp)
 
 #set(SOURCE_LIB vision_systems.cpp)	
-add_library(vis STATIC src/vision_systems.cpp)
+add_library(vis STATIC src/vision_systems.cpp src/aruco_custom_tools.cpp)
 
 add_executable(video_cap src/video_cap.cpp)
 
