@@ -14,7 +14,7 @@
 //#include <opencv2/core/persistence.hpp>
 
 
-#define VISUALZATION
+#define DVISUALIZATION
 
 using namespace std; 
 
@@ -110,7 +110,7 @@ class navigate_board_marker : public aruco_detector
 
         std::vector<std::vector<std::vector<cv::Point2f> >> corners_list;
         
-        #ifdef VISUALZATION
+        #ifdef DVISUALIZATION
             cv::Mat  image_copy;
         #endif
 

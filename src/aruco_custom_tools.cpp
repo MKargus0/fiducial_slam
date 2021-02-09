@@ -85,8 +85,8 @@ void draw_board(cv::aruco::Board *_board, cv::Size outSize, cv::OutputArray _img
 
         // remove perspective
         cv::Mat transformation = cv::getAffineTransform(inCorners, outCorners);
-        // warpAffine(marker, out, transformation, out.size(), INTER_LINEAR,
-        //                 BORDER_TRANSPARENT);
+        warpAffine(marker, out, transformation, out.size(),cv::INTER_NEAREST,
+                         cv::BORDER_TRANSPARENT);
     }
 
 
@@ -179,3 +179,27 @@ void get_board_object_and_image_points(const cv::Ptr<cv::aruco::Board> &board, c
     cv::Mat(objPnts).copyTo(objPoints);
     cv::Mat(imgPnts).copyTo(imgPoints);
 }
+
+
+
+// void draw_marker(int id, int sidePixels, cv::OutputArray _img, int borderBits) const {
+
+//     CV_Assert(sidePixels >= (markerSize + 2*borderBits));
+//     CV_Assert(id < bytesList.rows);
+//     CV_Assert(borderBits > 0);
+
+//     _img.create(sidePixels, sidePixels, CV_8UC1);
+
+//     // create small marker with 1 pixel per bin
+//     cv::Mat tinyMarker(markerSize + 2 * borderBits, markerSize + 2 * borderBits, CV_8UC1,
+//                    cv::Scalar::all(0));
+//     cv::Mat innerRegion = tinyMarker.rowRange(borderBits, tinyMarker.rows - borderBits)
+//                           .colRange(borderBits, tinyMarker.cols - borderBits);
+//     // put inner bits
+//     cv::Mat bits = 255 * cv::aruco::getBitsFromByteList(bytesList.rowRange(id, id + 1), markerSize);
+//     CV_Assert(innerRegion.total() == bits.total());
+//     bits.copyTo(innerRegion);
+
+//     // resize tiny marker to output size
+//     cv::resize(tinyMarker, _img.getMat(), _img.getMat().size(), 0, 0, cv::INTER_NEAREST);
+// }

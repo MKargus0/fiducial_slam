@@ -75,7 +75,7 @@ vision_system::~vision_system()
 {
     input_video.release();
 
-    #ifdef VISUALZATION
+    #ifdef DVISUALIZATION
         cv::destroyAllWindows();
     #endif
 }
@@ -239,12 +239,12 @@ void aruco_detector::marker_detect()
         {
             estimate_pose();
 
-            #ifdef VISUALZATION
+            #ifdef DVISUALIZATION
                 cv::aruco::drawDetectedMarkers(image,corners,ids);
             #endif
         }
 
-        #ifdef VISUALZATION
+        #ifdef DVISUALIZATION
 
             cv::namedWindow("out", cv::WINDOW_AUTOSIZE );
             cv::imshow("out", image);
@@ -276,7 +276,7 @@ void navigate_single_marker::estimate_pose()
             rvec = rvecs[i];
             tvec = tvecs[i];
             is_nav = true;
-            #ifdef VISUALZATION
+            #ifdef DVISUALIZATION
                 cv::aruco::drawAxis(image, camera_matrix, dist_coeffs, rvecs[marker_id], tvecs[marker_id], 0.1);
             #endif
         }
@@ -292,7 +292,7 @@ void navigate_board_marker::marker_detect()
 {
     if (!image.empty())
     {   
-        #ifdef VISUALZATION
+        #ifdef DVISUALIZATION
             image.copyTo(image_copy);
         #endif
         
@@ -308,7 +308,7 @@ void navigate_board_marker::marker_detect()
             {   
 
                 
-                #ifdef VISUALZATION
+                #ifdef DVISUALIZATION
                     cv::aruco::drawDetectedMarkers(image_copy,corners,ids);
                 #endif
 
@@ -348,7 +348,7 @@ void navigate_board_marker::marker_detect()
             // rvec /= board_detected_num;
             // tvec /= board_detected_num;
             is_nav = true;
-            #ifdef VISUALZATION
+            #ifdef DVISUALIZATION
                 cv::aruco::drawAxis(image_copy, camera_matrix, dist_coeffs, rvec, tvec, 0.4);
             #endif
         }
@@ -357,7 +357,7 @@ void navigate_board_marker::marker_detect()
           is_nav = false;   
         }
         
-        #ifdef VISUALZATION
+        #ifdef DVISUALIZATION
             //cv::namedWindow("out", cv::WINDOW_NORMAL );
             //cv::resizeWindow("out", 1280, 960);
             cv::namedWindow("out", cv::WINDOW_AUTOSIZE );
@@ -479,10 +479,10 @@ void navigate_board_marker::setup(string filename)
         board = cv::aruco::Board::create(rc,dictionary,mi);
 
         cout<< board->ids.size() << endl;
-        // #ifdef VISUALZATION
+        // #ifdef DVISUALIZATION
         cv::Mat image_board;
-        //     draw_planar_board(board_list[i],cv::Size(800, 800),board_img,50,1);
-        cv::aruco::drawPlanarBoard(board_list[i],cv::Size(800, 800),image_board,50,1);
+        draw_planar_board(board_list[i],cv::Size(800, 800),image_board,50,1);
+        //cv::aruco::drawPlanarBoard(board_list[i],cv::Size(800, 800),image_board,50,1);
         //     //cv::imshow("board_"+std::to_string(i), board_img);
         //     //cv::waitKey(0);
         if(!board_img_all.empty())
@@ -500,7 +500,7 @@ void navigate_board_marker::setup(string filename)
         
         // #endif
     }
-    cv::imwrite("/home/argus/board.jpg",board_img_all);
+    cv::imwrite("/home/argus/board_1.jpg",board_img_all);
     cout << "board has been generated "<<endl;
 }
 
