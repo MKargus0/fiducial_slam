@@ -138,6 +138,7 @@ class visual_navigation
 {
     public:
         visual_navigation(string config_file);
+        ~visual_navigation();
         void aruco_nav_do_step();
         void aruco_nav_do_step(cv::Mat &input_image);
         void flow_nav_do_step();
@@ -145,7 +146,7 @@ class visual_navigation
         Eigen::Quaterniond orientation;
         cv::Vec3d translation;
         cv::Vec3d vision_pose;
-
+        cv::Vec3d euler_angles;
         
         
 

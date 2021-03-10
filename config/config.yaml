@@ -14,13 +14,13 @@ use_aruco: yes
 #навигация по одному опорному маркеру - 1
 #навигация по полю маркеров - 2
 #использование slam алгоритма для формирования поля маркеров - 3
-aruco_navigation_type: 2
+aruco_navigation_type: 1
 
 #путь к конфигурации опорного маркера
-marker_config_path : /home/argus/visual_navigation/config/single_marker.yaml
+marker_config_path : /home/argus/projects/visual_navigation/config/single_marker.yaml
 
 #путь к конфигурации поля маркеров
-board_config_path: /home/argus/visual_navigation/config/board_config.yaml
+board_config_path: /home/argus/projects/visual_navigation/config/board_config.yaml
 
 #файл в который будет произвелена запись параметров поля маркеров полученная в результате работы slam алгоритма
 marker_slam_config: /path

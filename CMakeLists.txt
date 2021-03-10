@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 project( vision_navigation )
-find_package( OpenCV 3 REQUIRED )
+find_package( OpenCV 4 REQUIRED )
 find_package (Eigen3  REQUIRED)
 #link_directories("/usr/lib/" "/usr/include")
 include_directories(${EIGEN3_INCLUDE_DIR})
@@ -20,8 +20,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVISUALIZATION")
 add_library(vis STATIC src/vision_systems.cpp src/aruco_custom_tools.cpp)
 
 add_executable(video_cap src/video_cap.cpp)
+add_executable(motion_blur_remove_test src/motion_blur_remove_test.cpp)
+
 
 target_link_libraries(video_cap vis ${OpenCV_LIBS} -lopencv_aruco yaml-cpp)
 
-
+target_link_libraries(motion_blur_remove_test vis ${OpenCV_LIBS})
 

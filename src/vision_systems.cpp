@@ -104,8 +104,9 @@ aruco_detector::aruco_detector(int marker_bit_size,int dict_size,string video_so
 }
 aruco_detector::~aruco_detector()
 {
-
+    
 }
+
 // выбираем словарь маркеров(эталонная последовательность битов для идентификации маркера)
 void aruco_detector::set_dict(int marker_bit_size,int dict_size)
 {
@@ -238,10 +239,14 @@ void aruco_detector::marker_detect()
         if (ids.size() > 0)
         {
             estimate_pose();
-
+            is_nav = true;
             #ifdef DVISUALIZATION
                 cv::aruco::drawDetectedMarkers(image,corners,ids);
             #endif
+        }
+        else
+        {
+            is_nav = false;
         }
 
         #ifdef DVISUALIZATION
@@ -269,22 +274,32 @@ void navigate_single_marker::estimate_pose()
 {
     cv::aruco::estimatePoseSingleMarkers(corners, marker_size, camera_matrix, dist_coeffs, rvecs, tvecs);
 
-    for(int i=0;i<ids.size();i++)
-    {   
-        if(ids[i] == marker_id)
-        {
-            rvec = rvecs[i];
-            tvec = tvecs[i];
-            is_nav = true;
-            #ifdef DVISUALIZATION
-                cv::aruco::drawAxis(image, camera_matrix, dist_coeffs, rvecs[marker_id], tvecs[marker_id], 0.1);
-            #endif
-        }
-        else{
-            is_nav = false;
-        }
+    rvec = rvecs[0];
+    tvec = tvecs[0];
+
+    #ifdef DVISUALIZATION
+                cv::aruco::drawAxis(image, camera_matrix, dist_coeffs, rvecs[0], tvecs[0], 1);
+    #endif
+    
+    
+
+    //         tvec = tvecs[i];
+    // for(int i=0;i<ids.size();i++)
+    // {   
+    //     if(ids[i] == marker_id)
+    //     {
+    //         rvec = rvecs[i];
+    //         tvec = tvecs[i];
+    //         is_nav = true;
+    //         #ifdef DVISUALIZATION
+    //             cv::aruco::drawAxis(image, camera_matrix, dist_coeffs, rvecs[marker_id], tvecs[marker_id], 0.1);
+    //         #endif
+    //     }
+    //     else{
+    //         is_nav = false;
+    //     }
             
-    }
+    // }
     
 }
 
@@ -572,6 +587,13 @@ visual_navigation::visual_navigation(string config_file)
 
 }
 
+visual_navigation::~visual_navigation()
+{
+    ad->~aruco_detector();
+    
+
+}
+
 void visual_navigation::aruco_setup()
 {
     YAML::Node fs = YAML::LoadFile(config);
@@ -647,6 +669,9 @@ void visual_navigation::set_navigation_data()
     //передаем классу навигационной системы параметры векторов положения и ориентации камеры
     nav_status = ad->is_nav;//наблюдаются ли ориентиры (да нет)
     ad->euler_angles = ad->rvec_to_euler(ad->rvec);// углы ориентации камеры относительно ориентиров
+    //ad->euler_angles[0] += -3.145;
+    //ad->euler_angles[2] += 180 * 3.145 / 180;
+    euler_angles = ad->euler_angles;
     orientation = ad->euler_to_quat(ad->euler_angles);// кватернион ориентации камеры относительно ориентиров
     translation = ad->tvec;// положение ориентиров относительно визирной СК
     vision_pose = ad->vision_pose_transform(translation,ad->rvec);// положение каиеры в системе координат ориентиров
