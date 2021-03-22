@@ -1,6 +1,7 @@
 #include "vision_systems.hpp"
+#include "markerMap.hpp"
 
-vision_system::vision_system(string video_source,int width,int height)
+vision_system::vision_system(string video_source, int width, int height)
 {
     // if (!inputVideo.isOpened()){
     //     //error in opening the video input
@@ -8,7 +9,7 @@ vision_system::vision_system(string video_source,int width,int height)
     // }
     // else {inputVideo.open(video_source);}
     //cout << "nnnnnaiosfnlkjnflkanflk\n";
-    if(video_source != "none")
+    if (video_source != "none")
     {
         input_video.open(std::stoi(video_source));
         input_video.set(cv::CAP_PROP_FRAME_WIDTH,width);
@@ -93,7 +94,7 @@ void vision_system::get_camera_calibration(string filename)
 
 }
 
-aruco_detector::aruco_detector(int marker_bit_size,int dict_size,string video_source,int width,int height)
+aruco_detector::aruco_detector(int marker_bit_size, int dict_size,string video_source, int width, int height)
 :vision_system(video_source,width,height)
 {
     parameters = cv::aruco::DetectorParameters::create();
@@ -108,10 +109,10 @@ aruco_detector::~aruco_detector()
 }
 
 // выбираем словарь маркеров(эталонная последовательность битов для идентификации маркера)
-void aruco_detector::set_dict(int marker_bit_size,int dict_size)
+void aruco_detector::set_dict(int marker_bit_size, int dict_size)
 {
     float check_ = true;
-    switch(marker_bit_size)
+    switch (marker_bit_size)
     {
         case 4:
             switch (dict_size)
@@ -241,7 +242,7 @@ void aruco_detector::marker_detect()
             estimate_pose();
             is_nav = true;
             #ifdef DVISUALIZATION
-                cv::aruco::drawDetectedMarkers(image,corners,ids);
+                cv::aruco::drawDetectedMarkers(image, corners, ids);
             #endif
         }
         else
@@ -251,21 +252,21 @@ void aruco_detector::marker_detect()
 
         #ifdef DVISUALIZATION
 
-            cv::namedWindow("out", cv::WINDOW_AUTOSIZE );
+            cv::namedWindow("out", cv::WINDOW_NORMAL );
             cv::imshow("out", image);
 
         #endif
     }
 }
 
-navigate_single_marker::navigate_single_marker(string filename,string video_source,int width,int height)
-    :aruco_detector(4,50,video_source,width,height)
+navigate_single_marker::navigate_single_marker(string filename, string video_source, int width, int height)
+    :aruco_detector(4,50,video_source, width, height)
 {
     setup(filename);
 }
 
-navigate_board_marker::navigate_board_marker(string filename,string video_source,int width,int height)
-: aruco_detector(4,50,video_source,width,height)
+navigate_board_marker::navigate_board_marker(string filename, string video_source, int width, int height)
+: aruco_detector(4,50,video_source, width, height)
 {
     setup(filename);
 }
@@ -314,7 +315,7 @@ void navigate_board_marker::marker_detect()
         cv::Mat objPoints, imgPoints;// new
 
         board_detected_num = 0;
-        for(int i=0;i<board_list.size();i++)
+        for (int i = 0; i < board_list.size(); i++)
         {   
             //ids.clear();
             //corners.clear();
@@ -373,9 +374,11 @@ void navigate_board_marker::marker_detect()
         }
         
         #ifdef DVISUALIZATION
-            //cv::namedWindow("out", cv::WINDOW_NORMAL );
-            //cv::resizeWindow("out", 1280, 960);
-            cv::namedWindow("out", cv::WINDOW_AUTOSIZE );
+
+            cv::namedWindow("out", cv::WINDOW_NORMAL );
+            cv::resizeWindow("out", 1280, 960);
+            
+            // cv::namedWindow("out", cv::WINDOW_AUTOSIZE );
             cv::imshow("out", image_copy);
 
             // cv::Mat imageUndistorted; // Will be the undistorted version of the above image.
@@ -395,16 +398,11 @@ void navigate_board_marker::estimate_pose(int board_id)
 {
     //cv::Vec3d rvec, tvec;
     int valid = cv::aruco::estimatePoseBoard(corners, ids, board_list[board_id], camera_matrix, dist_coeffs, rvecs[board_id], tvecs[board_id]);
-    if(valid >0)
+    if(valid > 0)
     {
         board_detected_num++;
     }
     //cout << "out";
-}
-
-void navigate_slam_marker::estimate_pose()
-{
-
 }
 
 void navigate_single_marker::setup(string filename)
@@ -439,38 +437,38 @@ void navigate_board_marker::setup(string filename)
     dictionary_list.resize(dict_sizes.size());
     rvecs.resize(dict_sizes.size());
     tvecs.resize(dict_sizes.size());
-    for(int i = 0;i<marker_count;i++)
+    for (int i = 0; i < marker_count; i++)
     {   
        fs["marker_"+to_string(i+1)] >>  marker_params;
        
        marker_corners.clear();
-       corn.x = marker_params[2] - marker_params[8]/2;
-       corn.y = marker_params[3] + marker_params[8]/2;
+       corn.x = marker_params[2] - marker_params[8] / 2;
+       corn.y = marker_params[3] + marker_params[8] / 2;
        corn.z = marker_params[4];
-       corn = rotate_marker(corn,marker_params[5],marker_params[6],marker_params[7]);
+       corn = rotate_marker(corn, marker_params[5], marker_params[6], marker_params[7]);
        marker_corners.push_back(corn);
-       corn.x = marker_params[2] + marker_params[8]/2;
-       corn.y = marker_params[3] + marker_params[8]/2;
+       corn.x = marker_params[2] + marker_params[8] / 2;
+       corn.y = marker_params[3] + marker_params[8] / 2;
        corn.z = marker_params[4];
-       corn = rotate_marker(corn,marker_params[5],marker_params[6],marker_params[7]);
+       corn = rotate_marker(corn, marker_params[5], marker_params[6], marker_params[7]);
        marker_corners.push_back(corn);
-       corn.x = marker_params[2] + marker_params[8]/2;
-       corn.y = marker_params[3] - marker_params[8]/2;
+       corn.x = marker_params[2] + marker_params[8] / 2;
+       corn.y = marker_params[3] - marker_params[8] / 2;
        corn.z = marker_params[4];
-       corn = rotate_marker(corn,marker_params[5],marker_params[6],marker_params[7]);
+       corn = rotate_marker(corn, marker_params[5], marker_params[6], marker_params[7]);
        marker_corners.push_back(corn);
-       corn.x = marker_params[2] - marker_params[8]/2;
-       corn.y = marker_params[3] - marker_params[8]/2;
+       corn.x = marker_params[2] - marker_params[8] / 2;
+       corn.y = marker_params[3] - marker_params[8] / 2;
        corn.z = marker_params[4];
-       corn = rotate_marker(corn,marker_params[5],marker_params[6],marker_params[7]);
+       corn = rotate_marker(corn, marker_params[5], marker_params[6], marker_params[7]);
        marker_corners.push_back(corn);
        
    
        //для добавления идентификатора я векторов угловых точек маркеров
        //проверяем параметры маркера на
-       for(int j=0;j<dict_sizes.size();j++)
+       for (int j = 0;j < dict_sizes.size(); j++)
        {
-        if(marker_params[0] == marker_bit_sizes[j])
+        if (marker_params[0] == marker_bit_sizes[j])
         {
             marker_ids[j].push_back(marker_params[1]);
             rejected_candidates[j].push_back(marker_corners);
@@ -481,12 +479,12 @@ void navigate_board_marker::setup(string filename)
 
     //создаем эталонные доски для каждого типа опорных маркеров в нашем поле
     cv::Mat board_img_all;
-    for(int i = 0;i<board_list.size();i++)
+    for (int i = 0; i < board_list.size(); i++)
     {   
-        set_dict(marker_bit_sizes[i],dict_sizes[i]);
+        set_dict(marker_bit_sizes[i], dict_sizes[i]);
         dictionary_list[i] = dictionary;
         board_list[i] = cv::aruco::Board::create(rejected_candidates[i]
-                                                ,dictionary,marker_ids[i]);
+                                                , dictionary, marker_ids[i]);
 
         std::vector<std::vector<cv::Point3f>> rc = rejected_candidates[i];
         std::vector <int> mi = marker_ids[i];
@@ -496,15 +494,15 @@ void navigate_board_marker::setup(string filename)
         cout<< board->ids.size() << endl;
         // #ifdef DVISUALIZATION
         cv::Mat image_board;
-        draw_planar_board(board_list[i],cv::Size(800, 800),image_board,50,1);
+        draw_planar_board(board_list[i], cv::Size(800, 800), image_board, 50, 1);
         //cv::aruco::drawPlanarBoard(board_list[i],cv::Size(800, 800),image_board,50,1);
         //     //cv::imshow("board_"+std::to_string(i), board_img);
         //     //cv::waitKey(0);
-        if(!board_img_all.empty())
+        if (!board_img_all.empty())
         {
           cv::Mat dst;
           //board_img_all.copyTo(board_img_all(cv::Rect(0,0,image_board.cols, image_board.rows)));
-          cv::addWeighted(board_img_all,0.3,image_board,0.3,0,dst);
+          cv::addWeighted(board_img_all, 0.3, image_board, 0.3, 0, dst);
           board_img_all = dst;
           //cv2.addWeighted(img1,0.7,img2,0.3,0)
         }
@@ -515,16 +513,16 @@ void navigate_board_marker::setup(string filename)
         
         // #endif
     }
-    cv::imwrite("/home/argus/board_1.jpg",board_img_all);
-    cout << "board has been generated "<<endl;
+    cv::imwrite("/home/argus/board_1.jpg", board_img_all);
+    cout << "board has been generated " << endl;
 }
 
-cv::Point3f navigate_board_marker::rotate_marker(cv::Point3f corn,float roll,float pitch,float yaw)
+cv::Point3f navigate_board_marker::rotate_marker(cv::Point3f corn, float roll, float pitch, float yaw)
 {
-    Eigen::Quaternionf q_vector(0,corn.x-marker_params[2],corn.y-marker_params[3],corn.z-marker_params[4]); 
-    Eigen::Quaternionf quat_yaw(std::cos(yaw/2),0,0,std::sin(yaw/2));
-    Eigen::Quaternionf quat_pitch(std::cos(pitch/2),0,std::sin(pitch/2),0);
-    Eigen::Quaternionf quat_roll(std::cos(roll/2),std::sin(roll/2),0,0);
+    Eigen::Quaternionf q_vector(0, corn.x-marker_params[2], corn.y-marker_params[3], corn.z-marker_params[4]); 
+    Eigen::Quaternionf quat_yaw(std::cos(yaw/2) , 0, 0, std::sin(yaw/2));
+    Eigen::Quaternionf quat_pitch(std::cos(pitch/2), 0, std::sin(pitch/2), 0);
+    Eigen::Quaternionf quat_roll(std::cos(roll/2), std::sin(roll/2), 0, 0);
 
     Eigen::Quaternionf final_rot_q = quat_yaw * quat_pitch * quat_roll;
     // cout <<std::to_string(final_rot_q.w()) <<endl;
@@ -534,8 +532,15 @@ cv::Point3f navigate_board_marker::rotate_marker(cv::Point3f corn,float roll,flo
     //Eigen::Quaterniond qua_pitch(1,1,1,1);
     Eigen::Quaternionf res = final_rot_q * q_vector * final_rot_q.inverse();
 
-    cv::Point3f result = {res.x()+marker_params[2],res.y()+marker_params[3],res.z()+marker_params[4]};
+    cv::Point3f result = {res.x() + marker_params[2],res.y() + marker_params[3],res.z() + marker_params[4]};
     return result;
+}
+
+
+
+void navigate_board_marker::add_board_config(string filename)
+{
+    
 }
 
 void navigate_slam_marker::setup(string filename)
@@ -544,12 +549,11 @@ void navigate_slam_marker::setup(string filename)
 
 }
 
-void navigate_board_marker::add_board_config(string filename)
+void navigate_slam_marker::estimate_pose()
 {
-    
+    marker_detect();
+
 }
-
-
 
 visual_navigation::visual_navigation(string config_file)
 {
@@ -575,12 +579,12 @@ visual_navigation::visual_navigation(string config_file)
     //fs["use_flow"] >> use_flow;
     //fs["video_source"] >> video_source;  
 
-    if(use_aruco == true)
+    if (use_aruco == true)
     {   
        aruco_setup();
     }
 
-    if(use_flow == true)
+    if (use_flow == true)
     {
         flow_setup();
     }
@@ -590,7 +594,6 @@ visual_navigation::visual_navigation(string config_file)
 visual_navigation::~visual_navigation()
 {
     ad->~aruco_detector();
-    
 
 }
 
@@ -598,7 +601,7 @@ void visual_navigation::aruco_setup()
 {
     YAML::Node fs = YAML::LoadFile(config);
     camera_calibration_path = fs["camera_calibration_path"].as<std::string>();
-    switch(aruco_navigation_type)
+    switch (aruco_navigation_type)
     {
         case 1:
             single_marker_nav_setup();

@@ -17,7 +17,8 @@ if(DVISUALIZATION)
 endif(DVISUALIZATION)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVISUALIZATION")
 #set(SOURCE_LIB vision_systems.cpp)	
-add_library(vis STATIC src/vision_systems.cpp src/aruco_custom_tools.cpp)
+add_library(vis STATIC src/vision_systems.cpp src/aruco_custom_tools.cpp
+                       src/markerMap.cpp src/mathOperations.cpp)
 
 add_executable(video_cap src/video_cap.cpp)
 add_executable(motion_blur_remove_test src/motion_blur_remove_test.cpp)
