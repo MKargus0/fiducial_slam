@@ -3,9 +3,9 @@
 ---
 
 #источник видеопотока
-video_source: 0
-width: 640
-height: 480
+video_source: none
+width: 1280
+height: 960
 
 #навигация по опорным маркерам
 use_aruco: yes
@@ -26,6 +26,8 @@ board_config_path: /home/argus/projects/visual_navigation/config/board_config.ya
 marker_slam_config: /path
 
 #путь к файлу колибровок камеры
-camera_calibration_path: /home/argus/catkin_ws/src/UVAsendbox/config/ost.yaml
+
+camera_calibration_path: /home/argus/projects/visual_navigation/config/calibrationData/ocam_calib.yaml
+# camera_calibration_path: /home/argus/catkin_ws/src/UVAsendbox/config/ost.yaml
 
 use_flow: false

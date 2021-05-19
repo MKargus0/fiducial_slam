@@ -16,15 +16,21 @@ if(DVISUALIZATION)
   #add_definitions(VISUALIZATION)
 endif(DVISUALIZATION)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVISUALIZATION")
-#set(SOURCE_LIB vision_systems.cpp)	
-add_library(vis STATIC src/vision_systems.cpp src/aruco_custom_tools.cpp
-                       src/markerMap.cpp src/mathOperations.cpp)
+#set(SOURCE_LIB vision_systems.cpp)
+set(LIB_CPP_FILES 
+	src/visualSystem.cpp
+	src/visualizationOnImage.cpp
+	src/fiducialDetector.cpp)	
 
-add_executable(video_cap src/video_cap.cpp)
-add_executable(motion_blur_remove_test src/motion_blur_remove_test.cpp)
+
+add_library(vis STATIC ${LIB_CPP_FILES})
+
+add_executable(fiducial_detector_example examples/fiducial_detector_example.cpp)
+
+add_executable(get_image_from_source_example examples/get_image_from_source_example.cpp)
 
 
-target_link_libraries(video_cap vis ${OpenCV_LIBS} -lopencv_aruco yaml-cpp)
+target_link_libraries(fiducial_detector_example vis ${OpenCV_LIBS} yaml-cpp -lopencv_aruco)
+target_link_libraries(get_image_from_source_example vis ${OpenCV_LIBS} yaml-cpp)
 
-target_link_libraries(motion_blur_remove_test vis ${OpenCV_LIBS})
 
