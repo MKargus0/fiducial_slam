@@ -53,3 +53,23 @@ cv::Vec3d           	CvMathOperations::visionPoseTransformToLocalFrame(cv::Vec3d
     result = -rodr.t() *  cv::Mat(tvec);
     return cv::Vec3d(result);
 }
+
+cv::Point3f			CvMathOperations::rotateCorn(cv::Point3f corn, double boardX, double boardY, double boardZ, double roll, double pitch, double yaw)
+{
+	Eigen::Quaternionf q_vector(0, corn.x - boardX, corn.y - boardY, corn.z - boardZ); 
+    Eigen::Quaternionf quat_yaw(std::cos(yaw/2) , 0, 0, std::sin(yaw/2));
+    Eigen::Quaternionf quat_pitch(std::cos(pitch/2), 0, std::sin(pitch/2), 0);
+    Eigen::Quaternionf quat_roll(std::cos(roll/2), std::sin(roll/2), 0, 0);
+
+    Eigen::Quaternionf final_rot_q = quat_yaw * quat_pitch * quat_roll;
+    // cout <<std::to_string(final_rot_q.w()) <<endl;
+    // cout <<std::to_string(final_rot_q.x()) <<endl;
+    // cout <<std::to_string(final_rot_q.y()) <<endl;
+    // cout <<std::to_string(final_rot_q.z()) <<endl;
+    //Eigen::Quaterniond qua_pitch(1,1,1,1);
+    Eigen::Quaternionf res = final_rot_q * q_vector * final_rot_q.inverse();
+
+    cv::Point3d result = {res.x() + boardX, res.y() + boardY, res.z() + boardZ};
+    return result;
+
+}

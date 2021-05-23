@@ -4,8 +4,8 @@
 
 #источник видеопотока
 video_source: none
-width: 1280
-height: 960
+width: 640
+height: 480
 
 #навигация по опорным маркерам
 use_aruco: yes

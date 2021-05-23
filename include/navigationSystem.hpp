@@ -9,7 +9,7 @@
 class AnavigationSystem
 {
 	public:
-		VectorXn stateVector;
+		VectorXd stateVector;
 		virtual void estimateState() = 0;
 };
 

@@ -5,18 +5,25 @@
 #include 	<visualNavigationSystem.hpp>
 #include	<fiducialMap.hpp>
 #include	<config.hpp>
-
+#include	<customBoard.hpp>
+#include	<cvMathOperations.hpp>
+#include 	<mathOperations.hpp>
+#include 	<chrono>
 
 class AfiducialNavigation : public AvisualNavigationSystem
 {
 	public:
-
-		AfiducialNavigation(unsigned int detectorType, std::vector<*VisionSystem>	visionSysVector);
+		AfiducialNavigation(unsigned int detectorType, std::vector<VisionSystem*>	visionSysVector, const std::string &detectorConfigFile);
 		~AfiducialNavigation();
 		cv::Vec3d			tvec;
 		cv::Vec3d 			rvec;
-		Eigen::Vector3d		position;
-		Eigen::Vector3d		orientation;
+		// X
+		// Y
+		// Z
+		// roll
+		// pitch
+		// yaw
+		VectorXd			posInMap;
 
 	protected:
 		AfiducialDetector	*fiducialDetector;
@@ -27,11 +34,16 @@ class AfiducialNavigation : public AvisualNavigationSystem
 class FiducialBoardNavigation : public AfiducialNavigation
 {
 	public:
-		FiducialBoardNavigation(unsigned int detectorType, std::vector<*VisionSystem>	visionSysVector)
+		FiducialBoardNavigation(unsigned int detectorType, std::vector<VisionSystem*>	visionSysVector, const std::string &detectorConfigFile, const std::string &boardConfigFile);
 		~FiducialBoardNavigation();
 		void estimateState() override;
 
-
+	protected:
+		// при значении параметра Истина при решении задачи фотограмметрии учитывается предыдущее положение особых точек
+		// в таком режиме положение не может поменятся резко что в нашем случае неприемлимо т к если маркеры на какое то время 
+		// будут потеряны из поля зрения системы положение будет возращаться к истинному состоянию за некоторое время 
+		bool useExtrinsicGuess = false;
+		CastomMultipleBoard* Board;
 
 };
 
@@ -39,11 +51,23 @@ class FiducialBoardNavigation : public AfiducialNavigation
 class FiducialSlamNavigation : public FiducialBoardNavigation
 {
 	public:
-		FiducialSlamNavigation(unsigned int detectorType, std::vector<*VisionSystem>	visionSysVector, fiducialMap	*markerMap);
-		~FiducialSlamNavigation();
+		FiducialSlamNavigation(unsigned int detectorType, std::vector<VisionSystem*>	visionSysVector, const std::string &detectorConfigFile, const std::string &boardConfigFile);
+		// ~FiducialSlamNavigation();
 		void estimateState() override;
+		void setDeltaTime(double &timeDelta);
 	private:
-		fiducialMap		*markerMap;
+		// fiducialMap		*markerMap;
+		std::vector<cv::Vec3d>  tvecs;
+		std::vector<cv::Vec3d>  rvecs;
+		double					timeDelta;
+		double					waitTimeBeforeMarkerAdd;
+		vec1i_t					unknownIds;
+		vec1d_t					unknownMarkerTime;
+		vec1vecXd_t				unknownMarkerPose;
+		void 					updateMap();
+		void 					updateIdsDetectedTime(const unsigned int &cameraId);
+		void					deliteNotUpdatedMarkers();
+		VectorXd				transformPoseToMap(cv::Vec3d &rvec, cv::Vec3d &tvec, const unsigned int &cameraId);
 
 };
 

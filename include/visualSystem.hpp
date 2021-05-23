@@ -7,6 +7,7 @@
 #include 	<yaml-cpp/yaml.h>
 #include	<config.hpp>
 #include 	<types.hpp>
+#include <cvMathOperations.hpp>
 
 /**
  * @brief клас хранит в себе изображение , и его параметры для обработки не используется 
@@ -60,6 +61,7 @@ class VisionSystem
 		 * @param orientation 
 		 */
 		void setCameraPosition(Eigen::Vector3d &pose, Eigen::Vector3d &orientation);
+		VectorXd getCamPosition(cv::Vec3d &rvec, cv::Vec3d &tvec);
 	protected:
 
     	void   getCameraCalibration(const std::string &filename);

@@ -20,7 +20,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVISUALIZATION")
 set(LIB_CPP_FILES 
 	src/visualSystem.cpp
 	src/visualizationOnImage.cpp
-	src/fiducialDetector.cpp)	
+	src/fiducialDetector.cpp
+	src/customBoard.cpp
+	src/fuducialNavigationSystem.cpp
+	src/cvMathOperations.cpp
+	src/visualNavigationSystem.cpp
+	src/mathOperations.cpp)	
 
 
 add_library(vis STATIC ${LIB_CPP_FILES})
@@ -29,8 +34,14 @@ add_executable(fiducial_detector_example examples/fiducial_detector_example.cpp)
 
 add_executable(get_image_from_source_example examples/get_image_from_source_example.cpp)
 
+add_executable(fiducial_navigation_example examples/fiducial_navigation_example.cpp)
+
+add_executable(fiducial_slam_example examples/fiducial_slam_example.cpp)
+
 
 target_link_libraries(fiducial_detector_example vis ${OpenCV_LIBS} yaml-cpp -lopencv_aruco)
 target_link_libraries(get_image_from_source_example vis ${OpenCV_LIBS} yaml-cpp)
+target_link_libraries(fiducial_navigation_example vis ${OpenCV_LIBS} yaml-cpp -lopencv_aruco)
+target_link_libraries(fiducial_slam_example vis ${OpenCV_LIBS} yaml-cpp -lopencv_aruco)
 
 

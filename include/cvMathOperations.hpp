@@ -8,4 +8,5 @@ class CvMathOperations
 		static cv::Vec3d			rvecToEuler(cv::Vec3d &rvec);
 		static Eigen::Quaterniond  	eulerToQuat(cv::Vec3d &angles);
 		static cv::Vec3d           	visionPoseTransformToLocalFrame(cv::Vec3d &tvec, cv::Vec3d &rvec);
+		static cv::Point3f			rotateCorn(cv::Point3f corn, double boardX, double boardY, double boardZ, double roll, double pitch, double yaw);
 };

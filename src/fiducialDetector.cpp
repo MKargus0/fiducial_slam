@@ -28,25 +28,50 @@ ArucoDetector::~ArucoDetector()
 
 void ArucoDetector::detectFidusial()
 {
+	detectorStatus = false;
+	vec1i_t						markerIds;
+	vec2CvPoint2f_t				markerCorners;
+	
+	cornersList.clear();
+	idsList.clear();
 	for(unsigned int i = 0; i < visionSysVector.size(); i++)
 	{
+		ids.clear();
+		corners.clear();
 		visionSysVector[i]->inputVideo >> visionSysVector[i]->image;
 		if (!visionSysVector[i]->image.empty())
 		{
 			for (unsigned int j = 0; j < dictionaryList.size(); j++)
 			{
-				cv::aruco::detectMarkers(visionSysVector[i]->image, dictionaryList[j], cornersList[j], idsList[j], detectorParametrs);
-				#ifdef VISUALIZATION
-					cv::aruco::drawDetectedMarkers(visionSysVector[i]->image, cornersList[j], idsList[j]);
-				#endif
-			}
-			#ifdef VISUALIZATION
+				cv::aruco::detectMarkers(visionSysVector[i]->image, dictionaryList[j], markerCorners, markerIds, detectorParametrs);
+				if (markerIds.size() != 0)
+				{
+					addIdsAndCorners(markerIds, markerCorners, j);
+					detectorStatus = true;
 				
-				VisualizationOnImage::showImage(visionSysVector[i]->image);
-			#endif	
+					// после нужно андистортнуть точки для этой камеры чтобы потом вызывать единый солвПнП 
+					// #ifdef VISUALIZATION
+					// 	cv::aruco::drawDetectedMarkers(visionSysVector[i]->image, markerCorners, markerIds);
+					// #endif
+				}
+			}
+			// #ifdef VISUALIZATION
+				
+			// 	VisualizationOnImage::showImage(visionSysVector[i]->image,"source_" + std::to_string(i));
+			// #endif	
 			
 		}
-		
+		idsList.push_back(ids);
+		cornersList.push_back(corners);
+	}
+}
+
+void AfiducialDetector::addIdsAndCorners(vec1i_t &markerIds, vec2CvPoint2f_t &corners, const unsigned int &index)
+{
+	for (unsigned int i = 0; i < markerIds.size(); i++)
+	{
+		ids.push_back(markerIds[i] + dictNumList[index]);
+		this->corners.push_back(corners[i]);
 	}
 }
 
@@ -58,29 +83,31 @@ void ArucoDetector::updateParametrsFromCongig(const std::string &detectorParamet
 void ArucoDetector::setDicts(const std::string &dictionaryConfigFile)
 {
 	YAML::Node fs = YAML::LoadFile(dictionaryConfigFile);
-	std::vector<int> 	markerDictionariesTypes = fs["marker_dictionaries_type"].as<std::vector<int>>();
-	std::vector<int>	dictionariesSizes = fs["dictionaries_sizes"].as<std::vector<int>>();
+	dictsMarkersBitSize = fs["marker_dictionaries_type"].as<std::vector<int>>();
+	dictSizes = fs["dictionaries_sizes"].as<std::vector<int>>();
 
-	if (markerDictionariesTypes.size() != dictionariesSizes.size())
+	if (dictsMarkersBitSize.size() != dictSizes.size())
 	{
 		std::cout << "error check detector dictionary config size is not eqiual" << std::endl;
 		return;
 	}
 	//	устанавливаем размерность вектора словарей
-	dictionaryList.resize(dictionariesSizes.size());
+	dictionaryList.resize(dictSizes.size());
 	//	устанавливаем размерность вектора идентификаторов реперных маркеров
-	idsList.resize(dictionariesSizes.size());
+	idsList.resize(dictSizes.size());
 	//	устанавливаем размерность вектора угловых точек
 	// 	угловые точки являютя вершинами реперного маркера (4 на каждый маркер т к он квадратный)
-	cornersList.resize(dictionariesSizes.size());
+	cornersList.resize(dictSizes.size());
 	//устанавливаем словарь согласно конфигурации
-	for (unsigned int i = 0; i < dictionariesSizes.size(); i++)
+	for (unsigned int i = 0; i < dictSizes.size(); i++)
 	{
-		switch (markerDictionariesTypes[i])
+		switch (dictsMarkersBitSize[i])
 		{
 			case 4:
-            	switch (dictionariesSizes[i])
+				dictNumList.push_back(0);
+            	switch (dictSizes[i])
 				{
+					
 					case 50:
 						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
 						break;
@@ -98,7 +125,8 @@ void ArucoDetector::setDicts(const std::string &dictionaryConfigFile)
 				}
 				break;
 			case 5:
-				switch (dictionariesSizes[i])
+				dictNumList.push_back(1000);
+				switch (dictSizes[i])
 				{
 					case 50:
 						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_5X5_50);
@@ -117,7 +145,8 @@ void ArucoDetector::setDicts(const std::string &dictionaryConfigFile)
 				}
 				break;
 			case 6:
-				switch (dictionariesSizes[i])
+				dictNumList.push_back(2000);
+				switch (dictSizes[i])
 				{
 					case 50:
 						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_50);
@@ -136,7 +165,8 @@ void ArucoDetector::setDicts(const std::string &dictionaryConfigFile)
 				}
 				break;
 			case 7:
-				switch (dictionariesSizes[i])
+				dictNumList.push_back(3000);
+				switch (dictSizes[i])
 				{
 					case 50:
 						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_7X7_50);
@@ -155,7 +185,8 @@ void ArucoDetector::setDicts(const std::string &dictionaryConfigFile)
 				}
 				break;
 			case 1:
-				switch (dictionariesSizes[i])
+				dictNumList.push_back(4000);
+				switch (dictSizes[i])
 				{
 					case 0:
 						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_ARUCO_ORIGINAL);
@@ -165,7 +196,8 @@ void ArucoDetector::setDicts(const std::string &dictionaryConfigFile)
 				}
 				break;
 			case 16:
-				switch (dictionariesSizes[i])
+				dictNumList.push_back(5000);
+				switch (dictSizes[i])
 				{
 					case 0:
 						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_APRILTAG_16h5);
@@ -175,7 +207,8 @@ void ArucoDetector::setDicts(const std::string &dictionaryConfigFile)
 				}
 				break;
 			case 25:
-				switch (dictionariesSizes[i])
+				dictNumList.push_back(6000);
+				switch (dictSizes[i])
 				{
 					case 0:
 						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_APRILTAG_25h9);
@@ -185,7 +218,8 @@ void ArucoDetector::setDicts(const std::string &dictionaryConfigFile)
 				}
 				break;
 			case 3610:
-				switch (dictionariesSizes[i])
+				dictNumList.push_back(7000);
+				switch (dictSizes[i])
 				{
 					case 0:
 						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_APRILTAG_36h10);
@@ -195,7 +229,8 @@ void ArucoDetector::setDicts(const std::string &dictionaryConfigFile)
 				}
 				break;
 			case 3611:
-				switch (dictionariesSizes[i])
+				dictNumList.push_back(8000);
+				switch (dictSizes[i])
 				{
 					case 0:
 						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_APRILTAG_36h11);
@@ -208,7 +243,7 @@ void ArucoDetector::setDicts(const std::string &dictionaryConfigFile)
 	}
 }
 
-AprilTagDetector::AprilTagDetector(std::vector<VisionSystem*>	&visionSysVector)
+AprilTagDetector::AprilTagDetector(std::vector<VisionSystem*>	&visionSysVector, const std::string &configFile)
 	: AfiducialDetector(visionSysVector)
 {
 	

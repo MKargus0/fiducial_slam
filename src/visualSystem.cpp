@@ -82,3 +82,20 @@ void VisionSystem::setVideoSize(const unsigned int &width, const unsigned int &h
 	inputVideo.set(cv::CAP_PROP_FRAME_WIDTH,width);
     inputVideo.set(cv::CAP_PROP_FRAME_HEIGHT,height);
 }
+
+VectorXd VisionSystem::getCamPosition(cv::Vec3d &rvec, cv::Vec3d &tvec)
+{
+	VectorXd result;
+	result.resize(6);
+	cv::Vec3d pose = CvMathOperations::visionPoseTransformToLocalFrame(tvec, rvec);
+	cv::Vec3d angles = CvMathOperations::rvecToEuler(rvec);
+
+	result[0] = pose[0];
+	result[1] = pose[1];
+	result[2] = pose[2];
+	result[3] = angles[0];
+	result[4] = angles[1];
+	result[5] = angles[2];
+	return result;
+
+}

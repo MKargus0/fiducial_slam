@@ -4,13 +4,13 @@
 #include	<visualSystem.hpp>
 #include	<types.hpp>
 
-class AvisualNavigationSystem :: public AnavigationSystem
+class AvisualNavigationSystem : public AnavigationSystem
 {
 	public:
-		AvisualNavigationSystem(std::vector<*VisionSystem>	visionSysVector);
+		AvisualNavigationSystem();
 		~AvisualNavigationSystem();
 	protected :
-		std::vector<*VisionSystem>	visionSysVector;
+		// std::vector<VisionSystem*>	visionSysVector;
 		
 };
 
