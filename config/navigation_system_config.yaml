@@ -1,0 +1,15 @@
+source_count: 1
+
+# source_config_1: /home/argus/projects/visual_navigation/config/cameraConfigs/ocamFIsheyeConfig2.yaml
+source_config_1: /home/argus/projects/visual_navigation/config/cameraConfigs/gazeboCamWheelPlatform.yaml
+
+use_fiducial: 1
+
+detector_config_path: /home/argus/projects/visual_navigation/config/fiducialDetectorConfigs/dictionaryConfigARUCO.yaml
+
+board_config: /home/argus/projects/visual_navigation/config/fiducialBoards/board_2.yaml
+
+detector_type: 0
+
+fiducial_navigation_type: 2
+

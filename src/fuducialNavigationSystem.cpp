@@ -195,7 +195,7 @@ void	FiducialSlamNavigation::estimateState()
 					std::cout << "posInMap" << std::endl;
 					std::cout << posInMap << std::endl;
 					updateIdsDetectedTime(i);
-					// updateMap();
+					updateMap();
 					
 					#ifdef VISUALIZATION
 						VisualizationOnImage::drawMarkersAndAxes(fiducialDetector->visionSysVector[i]->image, fiducialDetector->cornersList[i],
@@ -317,18 +317,43 @@ VectorXd   FiducialSlamNavigation::transformPoseToMap(cv::Vec3d &rvec, cv::Vec3d
 
 
 	// где то косяк с поворотом
-	// markerPoseCam[3] = markerPoseCam[3] - posInMap[3]; 
-	// markerPoseCam[4] = markerPoseCam[4] - posInMap[4];
-	// markerPoseCam[5] = markerPoseCam[5] - posInMap[5];
-	markerPoseCam[3] = 0;//posInMap[3] + markerPoseCam[3]; 
-	markerPoseCam[4] = 0;//posInMap[4] + markerPoseCam[4];
-	markerPoseCam[5] = posInMap[5] - markerPoseCam[5];
+	
+	// markerPoseCam[3] = posInMap[3] - markerPoseCam[3]; 
+	// markerPoseCam[4] = posInMap[4] - markerPoseCam[4];
+	// markerPoseCam[5] = posInMap[5] - markerPoseCam[5];
+	// for (unsigned int i = 3; i < 6; i++)
+	// {
+	// 	if (abs(abs(posInMap[i]) - M_PI ) < 0.05 )
+	// 		posInMap[i] = M_PI;
+	// 	if (abs(abs(markerPoseCam[i]) - M_PI ) < 0.1 )
+	// 		markerPoseCam[i] = M_PI;
+	// }
+
+	markerPoseCam[3] = markerPoseCam[3] - posInMap[3]; 
+	markerPoseCam[4] = -(markerPoseCam[4] - posInMap[4]);
+	markerPoseCam[5] = -(markerPoseCam[5] - posInMap[5]);
+
+	
+	// markerPoseCam *= -1;
+	// for (unsigned int i = 3; i < 6; i++)
+	// {
+	// 	if (markerPoseCam[i] > M_PI)
+	// 		markerPoseCam[i] -= M_PI;
+	// 	else if (markerPoseCam[i] < M_PI)
+	// 		markerPoseCam[i] -= M_PI;
+	// }
+
+
 	
 	std::cout << "markerPoseCamResAngle" << std::endl;
 	std::cout << markerPoseCam << std::endl;
 
 	// разворачиваем вектор положения камеры в СК маркера найденного вне карты на угловое положение маркера в СК карты
 	Eigen::Vector3d markerPoseInMap = rotateVector(markerPoseCam);
+
+	std::cout << "markerPoseInMap" << std::endl;
+	std::cout << markerPoseInMap << std::endl;
+
 	// получаем положение и ориентацию маркера в СК карты
 	VectorXd markerPoseMap(6);
 	markerPoseMap[0] = posInMap[0] - markerPoseInMap[0];
@@ -338,8 +363,8 @@ VectorXd   FiducialSlamNavigation::transformPoseToMap(cv::Vec3d &rvec, cv::Vec3d
 	markerPoseMap[4] = markerPoseCam[4];
 	markerPoseMap[5] = markerPoseCam[5];
 
-	// std::cout << "markerPoseMap" << std::endl;
-	// std::cout << markerPoseMap << std::endl;
+	std::cout << "markerPoseMap" << std::endl;
+	std::cout << markerPoseMap << std::endl;
 
 	return markerPoseMap;
 
