@@ -16,15 +16,15 @@
 class VisionSystem
 {	
 	public:
-		//обьект обеспечивающий захват изображения их источника, служит для получения матрицы пикселей
+		//объект обеспечивающий захват изображения их источника, служит для получения матрицы пикселей
     	cv::VideoCapture    inputVideo;
-		// матрица пикселей получаемая из обьекта захвата изображения
+		// матрица пикселей получаемая из объекта захвата изображения
     	cv::Mat             image;
 		// матрица фокусных расстояний и оптических центров камеры
     	cv::Mat             cameraMatrix;
-		// матрица коэфициэнтов дисторсии камеры(модель )
+		// матрица коэффициентов дисторсии камеры(модель )
     	cv::Mat             distCoeffs;
-		//Положение и ориентаия камеры в осях связной системы координат обьекта
+		//Положение и ориентаия камеры в осях связной системы координат объекта
 		Eigen::Vector3d		cameraPosition; // X Y Z (metrs)
 		Eigen::Vector3d		cameraOrientation; // roll pitch yaw (rad)
 		/**
@@ -62,6 +62,8 @@ class VisionSystem
 		 */
 		void setCameraPosition(Eigen::Vector3d &pose, Eigen::Vector3d &orientation);
 		VectorXd getCamPosition(cv::Vec3d &rvec, cv::Vec3d &tvec);
+		void updateImage();
+		void updateImage(cv::Mat &image);
 	protected:
 
     	void   getCameraCalibration(const std::string &filename);

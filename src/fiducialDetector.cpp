@@ -38,7 +38,7 @@ void ArucoDetector::detectFidusial()
 	{
 		ids.clear();
 		corners.clear();
-		visionSysVector[i]->inputVideo >> visionSysVector[i]->image;
+		// visionSysVector[i]->inputVideo >> visionSysVector[i]->image;
 		if (!visionSysVector[i]->image.empty())
 		{
 			for (unsigned int j = 0; j < dictionaryList.size(); j++)

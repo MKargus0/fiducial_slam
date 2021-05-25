@@ -11,7 +11,7 @@ class VisualizationOnImage
 	public:
 		static void showImage(cv::Mat &image);
 		static void showImage(cv::Mat &image, const std::string &windowName);
-		static void drawMarkersAndAxes(cv::Mat &image, vec2CvPoint2f_t &corners, vec1i_t &ids, cv::Vec3d &rvec, cv::Vec3d &tvec, cv::Mat &cameraMatrix, cv::Mat &distCoeffs);
+		static void drawMarkersAndAxes(cv::Mat &image, vec2CvPoint2f_t &corners, vec1i_t &ids, cv::Vec3d &rvec, cv::Vec3d &tvec, cv::Mat &cameraMatrix, cv::Mat &distCoeffs, double &axesSize);
 };
 
 #endif

@@ -25,7 +25,9 @@ set(LIB_CPP_FILES
 	src/fuducialNavigationSystem.cpp
 	src/cvMathOperations.cpp
 	src/visualNavigationSystem.cpp
-	src/mathOperations.cpp)	
+	src/mathOperations.cpp
+	src/visualNavigationInterface.cpp
+	src/navigationSystem.cpp)	
 
 
 add_library(vis STATIC ${LIB_CPP_FILES})
@@ -38,10 +40,14 @@ add_executable(fiducial_navigation_example examples/fiducial_navigation_example.
 
 add_executable(fiducial_slam_example examples/fiducial_slam_example.cpp)
 
+add_executable(visual_navigation_example examples/visual_navigation_example.cpp)
 
+target_link_libraries(visual_navigation_example vis ${OpenCV_LIBS} yaml-cpp -lopencv_aruco)
 target_link_libraries(fiducial_detector_example vis ${OpenCV_LIBS} yaml-cpp -lopencv_aruco)
 target_link_libraries(get_image_from_source_example vis ${OpenCV_LIBS} yaml-cpp)
 target_link_libraries(fiducial_navigation_example vis ${OpenCV_LIBS} yaml-cpp -lopencv_aruco)
 target_link_libraries(fiducial_slam_example vis ${OpenCV_LIBS} yaml-cpp -lopencv_aruco)
 
 
+add_executable(test examples/test.cpp)
+target_link_libraries(test vis)

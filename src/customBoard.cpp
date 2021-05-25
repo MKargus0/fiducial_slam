@@ -145,28 +145,29 @@ void CastomMultipleBoard::addMarkerToBoard(cv::InputArray &rejected_candidate, c
 void CastomMultipleBoard::addMarkerToMap(const unsigned int &markerId, const double &markerSize, double &boardX, double &boardY,
 							const double &boardZ,const double &roll, const double &pitch,const double &yaw)
 {
+	
 	vec1CvPoint3f_t     markerCorners;
 	cv::Point3d			corn;
 	markerCorners.clear();
 	corn.x = boardX - markerSize / 2;
     corn.y = boardY + markerSize / 2;
     corn.z = boardZ;
-	CvMathOperations::rotateCorn(corn, boardX, boardY, boardZ, roll, pitch, yaw);
+	corn = CvMathOperations::rotateCorn(corn, boardX, boardY, boardZ, roll, pitch, yaw);
 	markerCorners.push_back(corn);
 	corn.x = boardX + markerSize / 2;
     corn.y = boardY + markerSize / 2;
     corn.z = boardZ;
-	CvMathOperations::rotateCorn(corn, boardX, boardY, boardZ, roll, pitch, yaw);
+	corn = CvMathOperations::rotateCorn(corn, boardX, boardY, boardZ, roll, pitch, yaw);
 	markerCorners.push_back(corn);
 	corn.x = boardX + markerSize / 2;
     corn.y = boardY - markerSize / 2;
     corn.z = boardZ;
-	CvMathOperations::rotateCorn(corn, boardX, boardY, boardZ, roll, pitch, yaw);
+	corn = CvMathOperations::rotateCorn(corn, boardX, boardY, boardZ, roll, pitch, yaw);
 	markerCorners.push_back(corn);
 	corn.x = boardX - markerSize / 2;
     corn.y = boardY - markerSize / 2;
     corn.z = boardZ;
-	CvMathOperations::rotateCorn(corn, boardX, boardY, boardZ, roll, pitch, yaw);
+	corn = CvMathOperations::rotateCorn(corn, boardX, boardY, boardZ, roll, pitch, yaw);
 	markerCorners.push_back(corn);
 
 	addMarkerToBoard(markerCorners, markerId);
@@ -180,22 +181,22 @@ void CastomMultipleBoard::addMarkerToMap(const unsigned int &markerId, const dou
 	corn.x = markerPose[0] - markerSize / 2;
     corn.y = markerPose[1] + markerSize / 2;
     corn.z = markerPose[2];
-	CvMathOperations::rotateCorn(corn, markerPose[0], markerPose[1], markerPose[2], markerPose[3], markerPose[4], markerPose[5]);
+	corn = CvMathOperations::rotateCorn(corn, markerPose[0], markerPose[1], markerPose[2], markerPose[3], markerPose[4], markerPose[5]);
 	markerCorners.push_back(corn);
 	corn.x = markerPose[0] + markerSize / 2;
     corn.y = markerPose[1] + markerSize / 2;
     corn.z = markerPose[2];
-	CvMathOperations::rotateCorn(corn, markerPose[0], markerPose[1], markerPose[2], markerPose[3], markerPose[4], markerPose[5]);
+	corn = CvMathOperations::rotateCorn(corn, markerPose[0], markerPose[1], markerPose[2], markerPose[3], markerPose[4], markerPose[5]);
 	markerCorners.push_back(corn);
 	corn.x = markerPose[0] + markerSize / 2;
     corn.y = markerPose[1] - markerSize / 2;
     corn.z = markerPose[2];
-	CvMathOperations::rotateCorn(corn, markerPose[0], markerPose[1], markerPose[2], markerPose[3], markerPose[4], markerPose[5]);
+	corn = CvMathOperations::rotateCorn(corn, markerPose[0], markerPose[1], markerPose[2], markerPose[3], markerPose[4], markerPose[5]);
 	markerCorners.push_back(corn);
 	corn.x = markerPose[0] - markerSize / 2;
     corn.y = markerPose[1] - markerSize / 2;
     corn.z = markerPose[2];
-	CvMathOperations::rotateCorn(corn, markerPose[0], markerPose[1], markerPose[2], markerPose[3], markerPose[4], markerPose[5]);
+	corn = CvMathOperations::rotateCorn(corn, markerPose[0], markerPose[1], markerPose[2], markerPose[3], markerPose[4], markerPose[5]);
 	markerCorners.push_back(corn);
 	addMarkerToBoard(markerCorners, markerId);
 }

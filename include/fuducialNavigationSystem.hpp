@@ -40,10 +40,12 @@ class FiducialBoardNavigation : public AfiducialNavigation
 
 	protected:
 		// при значении параметра Истина при решении задачи фотограмметрии учитывается предыдущее положение особых точек
-		// в таком режиме положение не может поменятся резко что в нашем случае неприемлимо т к если маркеры на какое то время 
-		// будут потеряны из поля зрения системы положение будет возращаться к истинному состоянию за некоторое время 
+		// в таком режиме положение не может поменяться резко что в нашем случае неприемлимо т к если маркеры на какое то время 
+		// будут потеряны из поля зрения системы положение будет возвращаться к истинному состоянию за некоторое время 
 		bool useExtrinsicGuess = false;
+		double axesSize;
 		CastomMultipleBoard* Board;
+		
 
 };
 
@@ -54,14 +56,16 @@ class FiducialSlamNavigation : public FiducialBoardNavigation
 		FiducialSlamNavigation(unsigned int detectorType, std::vector<VisionSystem*>	visionSysVector, const std::string &detectorConfigFile, const std::string &boardConfigFile);
 		// ~FiducialSlamNavigation();
 		void estimateState() override;
-		void setDeltaTime(double &timeDelta);
+		
 	private:
 		// fiducialMap		*markerMap;
 		std::vector<cv::Vec3d>  tvecs;
 		std::vector<cv::Vec3d>  rvecs;
-		double					timeDelta;
+		
+		double					markerSize;
 		double					waitTimeBeforeMarkerAdd;
 		vec1i_t					unknownIds;
+		vec1i_t					unknownIdsIters;
 		vec1d_t					unknownMarkerTime;
 		vec1vecXd_t				unknownMarkerPose;
 		void 					updateMap();

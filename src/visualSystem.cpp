@@ -35,13 +35,17 @@ VisionSystem::VisionSystem(const std::string configFile)
 	//утечки памяти возникают если не выставить бэкэнд
 	// бэкэнд выставляется для того чтобы выбрать способ ролучения изображения
 	// автоматический бэкэнд выбирает gstreamer а с ним утечки, такой не ставим cv::CAP_GSTREAMER
-	int Backend = cv::CAP_V4L2;
-	inputVideo.open(source,Backend);
-	int width;
-	int height;
-	fs_cv["image_width"] >> width;
-	fs_cv["image_height"] >> height;
-	setVideoSize(width, height);
+	if (source != -1)
+	{
+		int Backend = cv::CAP_V4L2;
+		inputVideo.open(source,Backend);
+		int width;
+		int height;
+		fs_cv["image_width"] >> width;
+		fs_cv["image_height"] >> height;
+		setVideoSize(width, height);
+	}
+	
 
 	fs_cv["camera_X"] >> cameraPosition[0];
 	fs_cv["camera_Y"] >> cameraPosition[1];
@@ -98,4 +102,14 @@ VectorXd VisionSystem::getCamPosition(cv::Vec3d &rvec, cv::Vec3d &tvec)
 	result[5] = angles[2];
 	return result;
 
+}
+
+void VisionSystem::updateImage()
+{
+	inputVideo >> image;
+}
+
+void VisionSystem::updateImage(cv::Mat &image)
+{
+	this->image = image;
 }

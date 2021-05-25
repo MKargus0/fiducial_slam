@@ -19,9 +19,9 @@ void VisualizationOnImage::showImage(cv::Mat &image, const std::string &windowNa
 	#endif
 }
 
-void VisualizationOnImage::drawMarkersAndAxes(cv::Mat &image, vec2CvPoint2f_t &corners, vec1i_t &ids, cv::Vec3d &rvec, cv::Vec3d &tvec, cv::Mat &cameraMatrix, cv::Mat &distCoeffs)
+void VisualizationOnImage::drawMarkersAndAxes(cv::Mat &image, vec2CvPoint2f_t &corners, vec1i_t &ids, cv::Vec3d &rvec, cv::Vec3d &tvec, cv::Mat &cameraMatrix, cv::Mat &distCoeffs, double &axesSize)
 {
 	cv::aruco::drawDetectedMarkers(image, corners, ids);
-	cv::aruco::drawAxis(image, cameraMatrix, distCoeffs, rvec, tvec, 0.4);
+	cv::aruco::drawAxis(image, cameraMatrix, distCoeffs, rvec, tvec, axesSize);
 	// showImage(image);
 }
