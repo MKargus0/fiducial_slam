@@ -301,10 +301,10 @@ void FiducialSlamNavigation::deliteNotUpdatedMarkers()
 	}
 
 }
-VectorXd   FiducialSlamNavigation::transformPoseToMap(cv::Vec3d &rvec, cv::Vec3d &tvec, const unsigned int &cameraId)
+VectorXd   FiducialSlamNavigation::transformPoseToMap(cv::Vec3d &rvecMarker, cv::Vec3d &tvecMarker, const unsigned int &cameraId)
 {
 	// получаем положение камеры в системе координат маркера обнаруженного вне карты
-	VectorXd markerPoseCam = fiducialDetector->visionSysVector[cameraId]->getCamPosition(rvec, tvec);
+	VectorXd markerPoseCam = fiducialDetector->visionSysVector[cameraId]->getCamPosition(rvecMarker, tvecMarker);
 	
 	// std::cout << "posInMap" << std::endl;
 	// std::cout << posInMap << std::endl;
@@ -329,10 +329,16 @@ VectorXd   FiducialSlamNavigation::transformPoseToMap(cv::Vec3d &rvec, cv::Vec3d
 	// 		markerPoseCam[i] = M_PI;
 	// }
 
-	markerPoseCam[3] = markerPoseCam[3] - posInMap[3]; 
-	markerPoseCam[4] = -(markerPoseCam[4] - posInMap[4]);
-	markerPoseCam[5] = -(markerPoseCam[5] - posInMap[5]);
+	// Вращение по иксу с обратным знаком возможно
+	// markerPoseCam[3] = markerPoseCam[3] - posInMap[3]; 
+	// markerPoseCam[4] = -(markerPoseCam[4] - posInMap[4]);
+	// markerPoseCam[5] = -(markerPoseCam[5] - posInMap[5]);
 
+	Eigen::Vector3d diff = CvMathOperations::getAngleDifferense(rvec,rvecMarker);
+    std::cout << "------------------------" << std::endl;
+	std::cout << "AnglesDiff" << std::endl;
+	std::cout << diff << std::endl;
+	std::cout << "------------------------" << std::endl;
 	
 	// markerPoseCam *= -1;
 	// for (unsigned int i = 3; i < 6; i++)
@@ -342,7 +348,9 @@ VectorXd   FiducialSlamNavigation::transformPoseToMap(cv::Vec3d &rvec, cv::Vec3d
 	// 	else if (markerPoseCam[i] < M_PI)
 	// 		markerPoseCam[i] -= M_PI;
 	// }
-
+	markerPoseCam[3] = diff[0];
+	markerPoseCam[4] = diff[1];
+	markerPoseCam[5] = diff[2];
 
 	
 	std::cout << "markerPoseCamResAngle" << std::endl;

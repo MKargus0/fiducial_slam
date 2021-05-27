@@ -71,7 +71,7 @@ class FiducialSlamNavigation : public FiducialBoardNavigation
 		void 					updateMap();
 		void 					updateIdsDetectedTime(const unsigned int &cameraId);
 		void					deliteNotUpdatedMarkers();
-		VectorXd				transformPoseToMap(cv::Vec3d &rvec, cv::Vec3d &tvec, const unsigned int &cameraId);
+		VectorXd				transformPoseToMap(cv::Vec3d &rvecMarker, cv::Vec3d &tvecMarker, const unsigned int &cameraId);
 
 };
 

@@ -1,11 +1,17 @@
 
 
 marker_count: 1 #количество маркеров в поле
-wait_time_before_marker_add: 10000
-# 
-# marker_size: 0.190 
+wait_time_before_marker_add: 2
+
+
+# A4 markers size
+# marker_size: 0.190
+
+# mini board marker size
 # marker_size: 0.041 
-marker_size: 0.951240
+
+# gazebo sim marker
+marker_size: 0.951240 
 
 axes_size: 0.3
 # marker_size_groups: [] 
@@ -22,8 +28,6 @@ axes_size: 0.3
 
 
 marker_1: [4,0,0,0,0,0,0,0,0.951240]
-
-
 # marker_1: [4,0,0,0,0,0,0,0,0.190]
 # marker_1: [4,0,0,0,0,0,0,0,0.041]
 
