@@ -40,6 +40,8 @@ VisualNavigation::VisualNavigation(const std::string &configfile)
 	// set time stamps for first system step
 	currentSysTime = std::chrono::high_resolution_clock::now();
 	lastSysTime = currentSysTime;
+
+	// initUDPClient();
 }
 
 
@@ -55,7 +57,16 @@ void VisualNavigation::estimatePosition()
 	{
 		navSystems[i]->estimateState();
 		navSystems[i]->setLoopTime(loopTime);
+		
 	}
+	// position[0] = navSystems[0]->stateVector[0];
+	// position[1] = navSystems[1]->stateVector[1];
+	// position[2] = navSystems[2]->stateVector[2];
+	// position[3] = navSystems[3]->stateVector[3];
+	// position[4] = navSystems[4]->stateVector[4];
+	// position[5] = navSystems[5]->stateVector[5];
+	
+	// sendMessageUDP(position);
 }
 
 void VisualNavigation::calcSystemLoopTime()

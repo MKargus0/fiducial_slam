@@ -8,6 +8,18 @@ CastomMultipleBoard::CastomMultipleBoard(const unsigned int &dictionaryCount)
 	objPoints.clear();
 	ids.clear();
 	this->dictionaryCount = dictionaryCount;
+	#ifdef VISUALIZATION
+		plot.size(800,800);
+		plot.legend().hide();
+		plot.xlabel("x");
+		plot.ylabel("y");
+		plot.zlabel("z");
+		plot.zrange(-0.3, 1);
+		plot.xrange(-1, 1);
+		plot.yrange(-1, 1);
+		plot.autoclean(false);
+		markerPlotIndex = 0;
+	#endif
 }
 
 
@@ -200,3 +212,40 @@ void CastomMultipleBoard::addMarkerToMap(const unsigned int &markerId, const dou
 	markerCorners.push_back(corn);
 	addMarkerToBoard(markerCorners, markerId);
 }
+#ifdef	VISUALIZATION
+void CastomMultipleBoard::showPlotWithMarkers()
+{
+	dataX.clear();
+	dataY.clear();
+	dataZ.clear();
+
+	std::vector<double> lineX;
+	std::vector<double> lineY;
+	std::vector<double> lineZ;
+	lineX.clear();
+	lineY.clear();
+	lineZ.clear();
+	for (int i = markerPlotIndex; i < ids.size(); i++)
+	{
+		for (unsigned int j = 0; j < 4; j++)
+		{
+			dataX.push_back(objPoints[i][j].x);
+			dataY.push_back(objPoints[i][j].y);
+			dataZ.push_back(objPoints[i][j].z);
+			// plot.drawPoints();
+		}
+		
+		// lineX.push_back(objPoints[i][0].x);
+		// lineY.push_back(objPoints[i][0].y);
+		// lineZ.push_back(objPoints[i][0].z);
+		// lineX.push_back(objPoints[i][1].x);
+		// lineY.push_back(objPoints[i][1].y);
+		// lineZ.push_back(objPoints[i][1].z);
+		// plot.drawCurve(lineX,lineY,lineZ);
+		// plot.show(true);
+		markerPlotIndex++;
+	}
+	plot.drawPoints(dataX, dataY, dataZ).pointType(2);
+	plot.show(true);
+}	
+#endif

@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 project( vision_navigation )
+set(CMAKE_CXX_STANDARD 17)
 find_package( OpenCV 4 REQUIRED )
 find_package (Eigen3  REQUIRED)
 #link_directories("/usr/lib/" "/usr/include")
@@ -27,7 +28,8 @@ set(LIB_CPP_FILES
 	src/visualNavigationSystem.cpp
 	src/mathOperations.cpp
 	src/visualNavigationInterface.cpp
-	src/navigationSystem.cpp)	
+	src/navigationSystem.cpp)
+	# src/sendPoseDataUDP.c)	
 
 
 add_library(vis STATIC ${LIB_CPP_FILES})

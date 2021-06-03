@@ -1,7 +1,7 @@
 source_count: 1
 
-# source_config_1: /home/argus/projects/visual_navigation/config/cameraConfigs/ocamFIsheyeConfig2.yaml
-source_config_1: /home/argus/projects/visual_navigation/config/cameraConfigs/gazeboCamWheelPlatform.yaml
+source_config_1: /home/argus/projects/visual_navigation/config/cameraConfigs/ocamFIsheyeConfig2.yaml
+# source_config_1: /home/argus/projects/visual_navigation/config/cameraConfigs/gazeboCamWheelPlatform.yaml
 # source_config_1: /home/argus/projects/visual_navigation/config/cameraConfigs/asusZenBookCamera.yaml
 
 

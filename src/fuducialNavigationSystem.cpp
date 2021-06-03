@@ -61,62 +61,6 @@ FiducialBoardNavigation::FiducialBoardNavigation(unsigned int detectorType, std:
 	}
 
 
-	// std::vector<double> markerParams;
-	// vec1CvPoint3f_t     markerCorners;
-	// cv::Point3d			corn;
-	// vec2CvPoint3f_t		rejectedCandidates;
-	// vec1i_t				markerIds;
-	// rejectedCandidates.resize(markerCount);
-	// markerIds.resize(markerCount);
-
-	// for (int i = 0; i < markerCount; i++)
-    // {
-	// 	markerParams =  fs["marker_" + std::to_string(i+1)].as<std::vector<double>>();
-	// 	markerCorners.clear();
-	// 	corn.x = markerParams[2] - markerParams[8] / 2;
-    //    	corn.y = markerParams[3] + markerParams[8] / 2;
-    //    	corn.z = markerParams[4];
-	// 	CvMathOperations::rotateCorn(corn, markerParams[2], markerParams[3], markerParams[4],markerParams[5], markerParams[6], markerParams[7]);
-	// 	markerCorners.push_back(corn);
-	// 	corn.x = markerParams[2] + markerParams[8] / 2;
-    //    	corn.y = markerParams[3] + markerParams[8] / 2;
-    //    	corn.z = markerParams[4];
-	// 	CvMathOperations::rotateCorn(corn, markerParams[2], markerParams[3], markerParams[4],markerParams[5], markerParams[6], markerParams[7]);
-	// 	markerCorners.push_back(corn);
-	// 	corn.x = markerParams[2] + markerParams[8] / 2;
-    //    	corn.y = markerParams[3] - markerParams[8] / 2;
-    //    	corn.z = markerParams[4];
-	// 	CvMathOperations::rotateCorn(corn, markerParams[2], markerParams[3], markerParams[4],markerParams[5], markerParams[6], markerParams[7]);
-	// 	markerCorners.push_back(corn);
-	// 	corn.x = markerParams[2] - markerParams[8] / 2;
-    //    	corn.y = markerParams[3] - markerParams[8] / 2;
-    //    	corn.z = markerParams[4];
-	// 	CvMathOperations::rotateCorn(corn, markerParams[2], markerParams[3], markerParams[4],markerParams[5], markerParams[6], markerParams[7]);
-	// 	markerCorners.push_back(corn);
-		
-		
-	// 	if ((int)markerParams[0] == 4)
-	// 	{
-	// 		markerIds[i] = markerParams[1];
-	// 	}
-	// 	else if (markerParams[0] == 5)
-	// 	{
-	// 		markerIds[i] = markerParams[1] + 1000;
-	// 	}
-	// 	else if (markerParams[0] == 6)
-	// 	{
-	// 		markerIds[i] = markerParams[1] + 2000;
-	// 	}
-	// 	else if (markerParams[0] == 7)
-	// 	{
-	// 		markerIds[i] = markerParams[1] + 3000;
-	// 	}
-
-	// 	rejectedCandidates[i] = markerCorners;
-	// }
-
-	// Board->addDataToBoard(rejectedCandidates, markerIds);
-
 }
 
 FiducialBoardNavigation::~FiducialBoardNavigation()
@@ -157,6 +101,7 @@ void FiducialBoardNavigation::estimateState()
 
 		#ifdef VISUALIZATION
 			VisualizationOnImage::showImage(fiducialDetector->visionSysVector[i]->image,"source_" + std::to_string(i));
+			Board->showPlotWithMarkers();
 		#endif
 	
 	}
@@ -192,6 +137,7 @@ void	FiducialSlamNavigation::estimateState()
 						fiducialDetector->visionSysVector[i]->distCoeffs, rvec, tvec, useExtrinsicGuess);
 
 					posInMap = fiducialDetector->visionSysVector[i]->getCamPosition(rvec, tvec);
+					stateVector = posInMap;
 					std::cout << "posInMap" << std::endl;
 					std::cout << posInMap << std::endl;
 					updateIdsDetectedTime(i);
@@ -207,6 +153,7 @@ void	FiducialSlamNavigation::estimateState()
 
 		#ifdef VISUALIZATION
 			VisualizationOnImage::showImage(fiducialDetector->visionSysVector[i]->image,"source_" + std::to_string(i));
+			Board->showPlotWithMarkers();
 		#endif
 	
 	}
@@ -306,8 +253,6 @@ VectorXd   FiducialSlamNavigation::transformPoseToMap(cv::Vec3d &rvecMarker, cv:
 	// получаем положение камеры в системе координат маркера обнаруженного вне карты
 	VectorXd markerPoseCam = fiducialDetector->visionSysVector[cameraId]->getCamPosition(rvecMarker, tvecMarker);
 	
-	// std::cout << "posInMap" << std::endl;
-	// std::cout << posInMap << std::endl;
 
 	std::cout << "markerPoseCam" << std::endl;
 	std::cout << markerPoseCam << std::endl;
@@ -316,23 +261,7 @@ VectorXd   FiducialSlamNavigation::transformPoseToMap(cv::Vec3d &rvecMarker, cv:
 	// таким образом получаем угловое положение маркера в СК карты
 
 
-	// где то косяк с поворотом
 	
-	// markerPoseCam[3] = posInMap[3] - markerPoseCam[3]; 
-	// markerPoseCam[4] = posInMap[4] - markerPoseCam[4];
-	// markerPoseCam[5] = posInMap[5] - markerPoseCam[5];
-	// for (unsigned int i = 3; i < 6; i++)
-	// {
-	// 	if (abs(abs(posInMap[i]) - M_PI ) < 0.05 )
-	// 		posInMap[i] = M_PI;
-	// 	if (abs(abs(markerPoseCam[i]) - M_PI ) < 0.1 )
-	// 		markerPoseCam[i] = M_PI;
-	// }
-
-	// Вращение по иксу с обратным знаком возможно
-	// markerPoseCam[3] = markerPoseCam[3] - posInMap[3]; 
-	// markerPoseCam[4] = -(markerPoseCam[4] - posInMap[4]);
-	// markerPoseCam[5] = -(markerPoseCam[5] - posInMap[5]);
 
 	Eigen::Vector3d diff = CvMathOperations::getAngleDifferense(rvec,rvecMarker);
     std::cout << "------------------------" << std::endl;

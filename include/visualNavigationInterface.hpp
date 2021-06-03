@@ -3,6 +3,7 @@
 #include <types.hpp>
 #include <fuducialNavigationSystem.hpp>
 #include <chrono>
+// #include <sendPoseDataUDP.h>
 
 /**
  * @brief класс интерфейс для работы со вмеми навигационными системами
@@ -15,7 +16,8 @@ class VisualNavigation
 		//статус навигационной системы (функцианирует / не функцианирует)
         bool                		nav_status;
 		// Положение обьекта в системе координат карты
-        Eigen::Vector3d				position;
+        // Eigen::Vector3d				position;
+		double							position[6];
 		// ориентация обьекта в системе координат карты
         Eigen::Vector3d				orientationAngles;
 		Eigen::Quaterniond			orientationQuat;
