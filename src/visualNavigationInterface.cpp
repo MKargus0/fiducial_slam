@@ -3,19 +3,20 @@
 
 VisualNavigation::VisualNavigation(const std::string &configfile)
 {
+	// читаем файл конфигурации
 	YAML::Node fs = YAML::LoadFile(configfile);
 	int sourceCount  = fs["source_count"].as<int>();
+	int useFiducial = fs["use_fiducial"].as<int>();
 	std::string sourceConfig;
-	
+	// инициализируем источники изображения
 	VisionSystem* singleCam;
 	for (unsigned int i = 0; i < sourceCount; i++)
 	{
 		sourceConfig =  fs["source_config_" + std::to_string(i+1)].as<std::string>();
-		
 		singleCam = new VisionSystem(sourceConfig);
 		camVec.push_back(singleCam);
 	}
-	int useFiducial = fs["use_fiducial"].as<int>();
+	// Создаем обьект систему обнаружения реперных маркеров и навигационную систему
 	if (useFiducial == 1)
 	{
 		std::string detectorConfig = fs["detector_config_path"].as<std::string>();
@@ -23,6 +24,7 @@ VisualNavigation::VisualNavigation(const std::string &configfile)
 		int detectorType = fs["detector_type"].as<int>();
 		int fiducialNavigationType = fs["fiducial_navigation_type"].as<int>();
 
+		// создаем обьект навигационной системы
 		AnavigationSystem* navSys;
 		if (fiducialNavigationType == 1)
 		{
@@ -37,7 +39,7 @@ VisualNavigation::VisualNavigation(const std::string &configfile)
 		
 		
 	}
-	// set time stamps for first system step
+	// устанавливаем начальные условия для рассчета времени цикла работы системы 
 	currentSysTime = std::chrono::high_resolution_clock::now();
 	lastSysTime = currentSysTime;
 
@@ -51,26 +53,32 @@ VisualNavigation::~VisualNavigation()
 }
 
 void VisualNavigation::estimatePosition()
-{
+{	
+	// рассчитываем время цикла работы системы
 	calcSystemLoopTime();
+	// оцениваем положение для всех навигационных систем
 	for (unsigned i = 0; i < navSystems.size(); i++)
 	{
-		navSystems[i]->estimateState();
+		nav_status = navSystems[i]->estimateState();
 		navSystems[i]->setLoopTime(loopTime);
-		
 	}
-	// position[0] = navSystems[0]->stateVector[0];
-	// position[1] = navSystems[1]->stateVector[1];
-	// position[2] = navSystems[2]->stateVector[2];
-	// position[3] = navSystems[3]->stateVector[3];
-	// position[4] = navSystems[4]->stateVector[4];
-	// position[5] = navSystems[5]->stateVector[5];
+	// TODO объединение решений для нескольких камер
+	if(nav_status == 1)
+	{
+		position[0] = navSystems[0]->stateVector[0];
+		position[1] = navSystems[0]->stateVector[1];
+		position[2] = navSystems[0]->stateVector[2];
+		position[3] = navSystems[0]->stateVector[3];
+		position[4] = navSystems[0]->stateVector[4];
+		position[5] = navSystems[0]->stateVector[5];
+	}
 	
 	// sendMessageUDP(position);
 }
 
 void VisualNavigation::calcSystemLoopTime()
 {
+	// рассчет времени цыкла работы системы
 	currentSysTime = std::chrono::high_resolution_clock::now();
 	timeStep = (currentSysTime - lastSysTime) / 1000;
 	lastSysTime = currentSysTime;

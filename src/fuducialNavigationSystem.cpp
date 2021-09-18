@@ -6,7 +6,7 @@ AfiducialNavigation::AfiducialNavigation(unsigned int detectorType, std::vector<
 {
 	// this->fiducialDetector = fiducialDetector;
 	// YAML::Node fs = YAML::LoadFile(dictionaryConfigFile);
-
+	stateVector.resize(6);
 	if ( detectorType == 0)
 		fiducialDetector = new ArucoDetector(visionSysVector,detectorConfigFile);
 	else if ( detectorType == 1)
@@ -69,42 +69,52 @@ FiducialBoardNavigation::~FiducialBoardNavigation()
 }
 
 
-void FiducialBoardNavigation::estimateState()
+int FiducialBoardNavigation::estimateState()
 {
+	// находим реперные маркеры
 	fiducialDetector->detectFidusial();
 	
-
+	int status = 0;
 	for (unsigned int i = 0; i < fiducialDetector->visionSysVector.size(); i++)
 	{
+		// вынести за цыыыыыкл!!!!!!
 		if (fiducialDetector->detectorStatus)
-		{
+		{		
 				// получаем вершины маркеров на изображении и эталонные последовательности вершин
 				// соответствующие им вершины на плоскости изображения(индексы пикселей вершин в матрице пикселей изображения)
 				Board->getBoardObjectAndImagePoints(fiducialDetector->idsList[i], fiducialDetector->cornersList[i]);
-
 				if (!Board->objPointsMat.empty())
 				{
 					//решаем задачу перемещения и вращения относительно эталонного объекта (карты маркеров)
 					cv::solvePnP(Board->objPointsMat, Board->imgPointsMat, fiducialDetector->visionSysVector[i]->cameraMatrix,
 						fiducialDetector->visionSysVector[i]->distCoeffs, rvec, tvec, useExtrinsicGuess);
-
+					// получаем положение камеры в СК карты
 					posInMap = fiducialDetector->visionSysVector[i]->getCamPosition(rvec, tvec);
+					stateVector = posInMap;
+					#ifdef DEBUG
 					std::cout << "posInMap" << std::endl;
 					std::cout << posInMap << std::endl;
+					#endif
 					#ifdef VISUALIZATION
 						VisualizationOnImage::drawMarkersAndAxes(fiducialDetector->visionSysVector[i]->image, fiducialDetector->cornersList[i],
 																 fiducialDetector->idsList[i], rvec, tvec, fiducialDetector->visionSysVector[i]->cameraMatrix,
 																fiducialDetector->visionSysVector[i]->distCoeffs, axesSize);
 					#endif
+					status = 1;
 				}
 		}
 
 		#ifdef VISUALIZATION
 			VisualizationOnImage::showImage(fiducialDetector->visionSysVector[i]->image,"source_" + std::to_string(i));
+		#endif
+
+		#ifdef USE_PLOTTER
 			Board->showPlotWithMarkers();
 		#endif
 	
 	}
+
+	return status;
 
 }
 
@@ -118,8 +128,9 @@ FiducialSlamNavigation::FiducialSlamNavigation(unsigned int detectorType, std::v
 
 }
 
-void	FiducialSlamNavigation::estimateState()
+int	FiducialSlamNavigation::estimateState()
 {
+	int status = 0;
 	fiducialDetector->detectFidusial();
 	for (unsigned int i = 0; i < fiducialDetector->visionSysVector.size(); i++)
 	{
@@ -138,9 +149,11 @@ void	FiducialSlamNavigation::estimateState()
 
 					posInMap = fiducialDetector->visionSysVector[i]->getCamPosition(rvec, tvec);
 					stateVector = posInMap;
+					#ifdef DEBUG
 					std::cout << "posInMap" << std::endl;
 					std::cout << posInMap << std::endl;
-					updateIdsDetectedTime(i);
+					#endif
+					updateIdsDetectedTime(i); 
 					updateMap();
 					
 					#ifdef VISUALIZATION
@@ -148,17 +161,23 @@ void	FiducialSlamNavigation::estimateState()
 																 fiducialDetector->idsList[i], rvec, tvec, fiducialDetector->visionSysVector[i]->cameraMatrix,
 																fiducialDetector->visionSysVector[i]->distCoeffs, axesSize);
 					#endif
+					status = 1;
 				}
 		}
 
 		#ifdef VISUALIZATION
 			VisualizationOnImage::showImage(fiducialDetector->visionSysVector[i]->image,"source_" + std::to_string(i));
+			
+		#endif
+
+		#ifdef USE_PLOTTER
 			Board->showPlotWithMarkers();
 		#endif
 	
 	}
 	//  удаляем информацию об обнаруженных маркерах вне карты, если повторно они не появились в поле зрения
 	deliteNotUpdatedMarkers();
+	return status;
 }
 
 void	FiducialSlamNavigation::updateIdsDetectedTime(const unsigned int &cameraId)
@@ -193,9 +212,10 @@ void	FiducialSlamNavigation::updateIdsDetectedTime(const unsigned int &cameraId)
 
 				// debug
 				VectorXd result = unknownMarkerPose[j] / unknownIdsIters[j];
+				#ifdef DEBUG
 				std::cout << "result" << std::endl;
 				std::cout << result << std::endl;
-
+				#endif
 
 			}
 		}
@@ -253,9 +273,10 @@ VectorXd   FiducialSlamNavigation::transformPoseToMap(cv::Vec3d &rvecMarker, cv:
 	// получаем положение камеры в системе координат маркера обнаруженного вне карты
 	VectorXd markerPoseCam = fiducialDetector->visionSysVector[cameraId]->getCamPosition(rvecMarker, tvecMarker);
 	
-
+	#ifdef DEBUG
 	std::cout << "markerPoseCam" << std::endl;
 	std::cout << markerPoseCam << std::endl;
+	#endif
 
 	// получаем разницу углового положения между СК карты и СК маркеры
 	// таким образом получаем угловое положение маркера в СК карты
@@ -264,10 +285,12 @@ VectorXd   FiducialSlamNavigation::transformPoseToMap(cv::Vec3d &rvecMarker, cv:
 	
 
 	Eigen::Vector3d diff = CvMathOperations::getAngleDifferense(rvec,rvecMarker);
+	#ifdef DEBUG
     std::cout << "------------------------" << std::endl;
 	std::cout << "AnglesDiff" << std::endl;
 	std::cout << diff << std::endl;
 	std::cout << "------------------------" << std::endl;
+	#endif
 	
 	// markerPoseCam *= -1;
 	// for (unsigned int i = 3; i < 6; i++)
@@ -281,15 +304,18 @@ VectorXd   FiducialSlamNavigation::transformPoseToMap(cv::Vec3d &rvecMarker, cv:
 	markerPoseCam[4] = diff[1];
 	markerPoseCam[5] = diff[2];
 
-	
+	#ifdef DEBUG
 	std::cout << "markerPoseCamResAngle" << std::endl;
 	std::cout << markerPoseCam << std::endl;
+	#endif
 
 	// разворачиваем вектор положения камеры в СК маркера найденного вне карты на угловое положение маркера в СК карты
 	Eigen::Vector3d markerPoseInMap = rotateVector(markerPoseCam);
 
+	#ifdef DEBUG
 	std::cout << "markerPoseInMap" << std::endl;
 	std::cout << markerPoseInMap << std::endl;
+	#endif
 
 	// получаем положение и ориентацию маркера в СК карты
 	VectorXd markerPoseMap(6);
@@ -300,8 +326,10 @@ VectorXd   FiducialSlamNavigation::transformPoseToMap(cv::Vec3d &rvecMarker, cv:
 	markerPoseMap[4] = markerPoseCam[4];
 	markerPoseMap[5] = markerPoseCam[5];
 
+	#ifdef DEBUG
 	std::cout << "markerPoseMap" << std::endl;
 	std::cout << markerPoseMap << std::endl;
+	#endif
 
 	return markerPoseMap;
 
@@ -319,9 +347,10 @@ void	FiducialSlamNavigation::updateMap()
 			// std::cout << unknownMarkerPose[i] << std::endl;
 			// усредняем результаты измерений положения маркера вне карты
 			VectorXd result = unknownMarkerPose[i] / unknownIdsIters[i];
-
+			#ifdef DEBUG
 			std::cout << "finalResult" << std::endl;
 			std::cout << result << std::endl;
+			#endif
 			// добавляем маркер в карту
 			Board->addMarkerToMap(unknownIds[i], markerSize, result);
 			// очищаем массивы т к теперь этот маркер в карте

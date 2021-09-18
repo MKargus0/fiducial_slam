@@ -3,8 +3,10 @@
 #include <types.hpp>
 #include <cvMathOperations.hpp>
 #include <config.hpp>
+#include <fstream>
+#include <iostream>
 
-#ifdef VISUALIZATION
+#ifdef USE_PLOTTER
 	#include <sciplot/sciplot.hpp>
 #endif
 class CastomDictionary
@@ -34,21 +36,23 @@ class CastomMultipleBoard
 							const double &boardZ,const double &roll, const double &pitch,const double &yaw);
 		void addMarkerToMap(const unsigned int &markerId, const double &markerSize, VectorXd &markerPose);
 		void addMarkerToBoard(cv::InputArray &rejected_candidate, const unsigned int &markerId);
-		#ifdef	VISUALIZATION
+		
+		#ifdef	USE_PLOTTER
 			void showPlotWithMarkers();
 		#endif
-		
+		void writeMapDataToFile();
 	protected:
 		void updateDataMap(const unsigned int &markerId,vec1CvPoint2f_t &markerCorners);
-	
+
 	private:
-		#ifdef	VISUALIZATION
+		#ifdef	USE_PLOTTER
 			sciplot::Plot3D		plot;
 			vec1d_t				dataX;
 			vec1d_t				dataY;
 			vec1d_t				dataZ;
 			int					markerPlotIndex;
 		#endif
+		std::ofstream mapFile; // out file stream
 
 		
 		

@@ -8,7 +8,10 @@ CastomMultipleBoard::CastomMultipleBoard(const unsigned int &dictionaryCount)
 	objPoints.clear();
 	ids.clear();
 	this->dictionaryCount = dictionaryCount;
-	#ifdef VISUALIZATION
+
+	// mapFile.open("/home/argus/anish.txt");
+
+	#ifdef USE_PLOTTER
 		plot.size(800,800);
 		plot.legend().hide();
 		plot.xlabel("x");
@@ -42,6 +45,7 @@ CastomMultipleBoard::CastomMultipleBoard(const unsigned int &dictionaryCount)
 
 void CastomMultipleBoard::addDataToBoard(cv::InputArrayOfArrays &objPoints, cv::InputArray &ids)
 {
+	// добавляем новые номера и вершины в карту
 	CV_Assert(objPoints.total() == ids.total());
     CV_Assert(objPoints.type() == CV_32FC3 || objPoints.type() == CV_32FC1);
 	std::vector< std::vector< cv::Point3f > > obj_points_vector;
@@ -141,6 +145,7 @@ void CastomMultipleBoard::getBoardObjectAndImagePoints(cv::InputArray &detectedI
 
 void CastomMultipleBoard::addMarkerToBoard(cv::InputArray &rejected_candidate, const unsigned int &markerId)
 {
+	// добавляем новые номер и вершины в карту
 	std::vector<cv::Point3f> corners;
 	cv::Mat corners_mat = rejected_candidate.getMat();
 
@@ -157,28 +162,46 @@ void CastomMultipleBoard::addMarkerToBoard(cv::InputArray &rejected_candidate, c
 void CastomMultipleBoard::addMarkerToMap(const unsigned int &markerId, const double &markerSize, double &boardX, double &boardY,
 							const double &boardZ,const double &roll, const double &pitch,const double &yaw)
 {
-	
+	// запись данных о ориентацци положении,индексе в файл
+
+	mapFile.open("/home/argus/testForTello.txt",std::ios::in | std::ios::out | std::ios::ate);
+	mapFile << "marker_" + std::to_string(this->ids.size() + 1) + ": ";
+	mapFile << "[" + std::to_string(markerId) +",";
+	mapFile << std::to_string(boardX) + ",";
+	mapFile << std::to_string(boardY) + ",";
+	mapFile << std::to_string(boardZ) + ",";
+	mapFile << std::to_string(roll)   + ",";
+	mapFile << std::to_string(pitch)  + ",";
+	mapFile << std::to_string(yaw)    + ",";
+	mapFile << std::to_string(markerSize) +"]" << std::endl;
+	mapFile.close();
+
+	// Получаем положение угловых точек в СК маркера
 	vec1CvPoint3f_t     markerCorners;
 	cv::Point3d			corn;
 	markerCorners.clear();
 	corn.x = boardX - markerSize / 2;
     corn.y = boardY + markerSize / 2;
     corn.z = boardZ;
+	// Перевод вершины маркера в СК карты
 	corn = CvMathOperations::rotateCorn(corn, boardX, boardY, boardZ, roll, pitch, yaw);
 	markerCorners.push_back(corn);
 	corn.x = boardX + markerSize / 2;
     corn.y = boardY + markerSize / 2;
     corn.z = boardZ;
+	// Перевод вершины маркера в СК карты
 	corn = CvMathOperations::rotateCorn(corn, boardX, boardY, boardZ, roll, pitch, yaw);
 	markerCorners.push_back(corn);
 	corn.x = boardX + markerSize / 2;
     corn.y = boardY - markerSize / 2;
     corn.z = boardZ;
+	// Перевод вершины маркера в СК карты
 	corn = CvMathOperations::rotateCorn(corn, boardX, boardY, boardZ, roll, pitch, yaw);
 	markerCorners.push_back(corn);
 	corn.x = boardX - markerSize / 2;
     corn.y = boardY - markerSize / 2;
     corn.z = boardZ;
+	// Перевод вершины маркера в СК карты
 	corn = CvMathOperations::rotateCorn(corn, boardX, boardY, boardZ, roll, pitch, yaw);
 	markerCorners.push_back(corn);
 
@@ -187,34 +210,54 @@ void CastomMultipleBoard::addMarkerToMap(const unsigned int &markerId, const dou
 
 void CastomMultipleBoard::addMarkerToMap(const unsigned int &markerId, const double &markerSize, VectorXd &markerPose)
 {
+	// запись данных о ориентацци положении,индексе в файл
+	mapFile.open("/home/argus/anish.txt",std::ios::in | std::ios::out | std::ios::ate);
+	mapFile << "marker_" + std::to_string(this->ids.size() + 1) + ": ";
+	mapFile << "[" + std::to_string(markerId) +",";
+	mapFile << std::to_string(markerPose[0]) + ",";
+	mapFile << std::to_string(markerPose[1]) + ",";
+	mapFile << std::to_string(markerPose[2]) + ",";
+	mapFile << std::to_string(markerPose[3])   + ",";
+	mapFile << std::to_string(markerPose[4])  + ",";
+	mapFile << std::to_string(markerPose[5])    + ",";
+	mapFile << std::to_string(markerSize) +"]" << std::endl;
+	mapFile.close();
+
+
+	// Получаем положение угловых точек в СК маркера
 	vec1CvPoint3f_t     markerCorners;
 	cv::Point3d			corn;
 	markerCorners.clear();
 	corn.x = markerPose[0] - markerSize / 2;
     corn.y = markerPose[1] + markerSize / 2;
     corn.z = markerPose[2];
+	// Перевод вершины маркера в СК карты
 	corn = CvMathOperations::rotateCorn(corn, markerPose[0], markerPose[1], markerPose[2], markerPose[3], markerPose[4], markerPose[5]);
 	markerCorners.push_back(corn);
 	corn.x = markerPose[0] + markerSize / 2;
     corn.y = markerPose[1] + markerSize / 2;
     corn.z = markerPose[2];
+	// Перевод вершины маркера в СК карты
 	corn = CvMathOperations::rotateCorn(corn, markerPose[0], markerPose[1], markerPose[2], markerPose[3], markerPose[4], markerPose[5]);
 	markerCorners.push_back(corn);
 	corn.x = markerPose[0] + markerSize / 2;
     corn.y = markerPose[1] - markerSize / 2;
     corn.z = markerPose[2];
+	// Перевод вершины маркера в СК карты
 	corn = CvMathOperations::rotateCorn(corn, markerPose[0], markerPose[1], markerPose[2], markerPose[3], markerPose[4], markerPose[5]);
 	markerCorners.push_back(corn);
 	corn.x = markerPose[0] - markerSize / 2;
     corn.y = markerPose[1] - markerSize / 2;
     corn.z = markerPose[2];
+	// Перевод вершины маркера в СК карты
 	corn = CvMathOperations::rotateCorn(corn, markerPose[0], markerPose[1], markerPose[2], markerPose[3], markerPose[4], markerPose[5]);
 	markerCorners.push_back(corn);
 	addMarkerToBoard(markerCorners, markerId);
 }
-#ifdef	VISUALIZATION
+#ifdef	USE_PLOTTER
 void CastomMultipleBoard::showPlotWithMarkers()
 {
+	// очищаем данные о точках для графика
 	dataX.clear();
 	dataY.clear();
 	dataZ.clear();
@@ -222,9 +265,10 @@ void CastomMultipleBoard::showPlotWithMarkers()
 	std::vector<double> lineX;
 	std::vector<double> lineY;
 	std::vector<double> lineZ;
-	lineX.clear();
-	lineY.clear();
-	lineZ.clear();
+	// lineX.clear();
+	// lineY.clear();
+	// lineZ.clear();
+	// добавляем новые точки в график
 	for (int i = markerPlotIndex; i < ids.size(); i++)
 	{
 		for (unsigned int j = 0; j < 4; j++)
@@ -245,6 +289,7 @@ void CastomMultipleBoard::showPlotWithMarkers()
 		// plot.show(true);
 		markerPlotIndex++;
 	}
+	// обновляем график
 	plot.drawPoints(dataX, dataY, dataZ).pointType(2);
 	plot.show(true);
 }	

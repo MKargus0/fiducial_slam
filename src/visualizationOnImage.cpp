@@ -6,7 +6,7 @@ void VisualizationOnImage::showImage(cv::Mat &image)
 	cv::namedWindow("out", cv::WINDOW_NORMAL);
 	cv::imshow("out", image);
 	#ifndef ENABLE_QUIT_FROM_WINDOW
-		cv::waitKey(10);
+		cv::waitKey(1);
 	#endif
 }
 
@@ -15,7 +15,7 @@ void VisualizationOnImage::showImage(cv::Mat &image, const std::string &windowNa
 	cv::namedWindow(windowName, cv::WINDOW_NORMAL);
 	cv::imshow(windowName, image);
 	#ifndef ENABLE_QUIT_FROM_WINDOW
-		cv::waitKey(10);
+		cv::waitKey(1);
 	#endif
 }
 

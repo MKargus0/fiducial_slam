@@ -23,7 +23,8 @@ distortion_coefficients: !!opencv-matrix
        0.0 ]
 avg_reprojection_error: 0.0371185753469972
 
-# источник изображения
+# источник изображения 
+# (номер задается в том случае если используется /dev/video..)
 video_source: 4
 # положение камеры в связной СК
 camera_X: 0 

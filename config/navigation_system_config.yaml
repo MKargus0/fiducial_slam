@@ -1,17 +1,26 @@
+# количество заданных источников
 source_count: 1
 
-source_config_1: /home/argus/projects/visual_navigation/config/cameraConfigs/ocamFIsheyeConfig2.yaml
-# source_config_1: /home/argus/projects/visual_navigation/config/cameraConfigs/gazeboCamWheelPlatform.yaml
+# указываем количество источников изображения в формате source_config_<номер источника>: путь к файлу конфигурации
+# source_config_1: /home/argus/projects/visual_navigation/config/cameraConfigs/ocamFIsheyeConfig2.yaml
+# source_config_1: /home/argus/projects/visual_navigation/config/cameraConfigs/telloCamera.yaml
+source_config_1: /home/argus/projects/visual_navigation/config/cameraConfigs/gazeboCamWheelPlatform.yaml
 # source_config_1: /home/argus/projects/visual_navigation/config/cameraConfigs/asusZenBookCamera.yaml
 
-
 use_fiducial: 1
-
+# путь к файлу конфигурации детектора реперных маркеров 
 detector_config_path: /home/argus/projects/visual_navigation/config/fiducialDetectorConfigs/dictionaryConfigARUCO.yaml
-
+# путь к файлу конфигурации карты маркеров
 board_config: /home/argus/projects/visual_navigation/config/fiducialBoards/board_2.yaml
 
+# тип используемых реперных маркеров
+# 1 - ArUco
+# 2 - AprilTag
+# 3 - TODO ....
 detector_type: 0
 
+# тип используемой навигационной системы
+# 1 - карта маркеров(априорно известно положение маркеров в карте)
+# 2 - fiducial slam 
 fiducial_navigation_type: 2
 

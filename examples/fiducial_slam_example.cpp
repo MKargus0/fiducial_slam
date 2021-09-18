@@ -4,9 +4,9 @@
 
 int main()
 {
-	std::string camConfig = "/home/argus/projects/visual_navigation_new/config/cameraConfigs/asusZenBookCamera.yaml";
+	std::string camConfig = "/home/argus/projects/visual_navigation/config/cameraConfigs/ocamFIsheyeConfig2.yaml";
 	std::string boardConfig = "/home/argus/projects/visual_navigation_new/config/fiducialBoards/board_2.yaml";
-	std::string detectorConfig = "/home/argus/projects/visual_navigation_new/config/fiducialDetectorConfigs/dictionaryConfigARUCO.yaml";
+	std::string detectorConfig = "/home/argus/projects/visual_navigation/config/fiducialDetectorConfigs/dictionaryConfigARUCO.yaml";
 
 	std::vector<VisionSystem*> camVec;
 	VisionSystem* singleCam;
@@ -22,6 +22,7 @@ int main()
 	
 	currentSysTime = std::chrono::high_resolution_clock::now();
 	lastSysTime = currentSysTime;
+	// главный цыкл алгоритма
 	while(true)
 	{
 		currentSysTime = std::chrono::high_resolution_clock::now();

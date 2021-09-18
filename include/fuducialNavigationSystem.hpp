@@ -36,7 +36,7 @@ class FiducialBoardNavigation : public AfiducialNavigation
 	public:
 		FiducialBoardNavigation(unsigned int detectorType, std::vector<VisionSystem*>	visionSysVector, const std::string &detectorConfigFile, const std::string &boardConfigFile);
 		~FiducialBoardNavigation();
-		void estimateState() override;
+		int estimateState() override;
 
 	protected:
 		// при значении параметра Истина при решении задачи фотограмметрии учитывается предыдущее положение особых точек
@@ -55,7 +55,7 @@ class FiducialSlamNavigation : public FiducialBoardNavigation
 	public:
 		FiducialSlamNavigation(unsigned int detectorType, std::vector<VisionSystem*>	visionSysVector, const std::string &detectorConfigFile, const std::string &boardConfigFile);
 		// ~FiducialSlamNavigation();
-		void estimateState() override;
+		int estimateState() override;
 		
 	private:
 		// fiducialMap		*markerMap;

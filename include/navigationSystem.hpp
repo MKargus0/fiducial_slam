@@ -10,11 +10,11 @@ class AnavigationSystem
 {
 	public:
 		VectorXd stateVector;
-		virtual void estimateState() = 0;
+		virtual int estimateState() = 0;
 		void setLoopTime(double &loopTime);
 		double getLoopTime();
 	private:
-
+		
 		double		loopTime;
 		
 		

@@ -14,7 +14,7 @@ class VisualNavigation
     public:
 
 		//статус навигационной системы (функцианирует / не функцианирует)
-        bool                		nav_status;
+        int                		nav_status;
 		// Положение обьекта в системе координат карты
         // Eigen::Vector3d				position;
 		double							position[6];
@@ -44,9 +44,6 @@ class VisualNavigation
         std::vector<AnavigationSystem*>				navSystems;
 		double										loopTime;   // system time step
 		void	calcSystemLoopTime();
-
-		
-		
 
 };
 

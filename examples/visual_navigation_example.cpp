@@ -1,6 +1,6 @@
 #include <visualNavigationInterface.hpp>
 
-#define ENABLE_QUIT_FROM_WINDOW
+// #define ENABLE_QUIT_FROM_WINDOW
 
 int main()
 {
@@ -23,7 +23,7 @@ int main()
 		}
 
 		visNavInterface.estimatePosition();
-		char key = (char) cv::waitKey(30);
+		char key = (char) cv::waitKey(1);
    			if (key == 27)
         		break;
 	}

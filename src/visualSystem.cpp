@@ -35,9 +35,16 @@ VisionSystem::VisionSystem(const std::string configFile)
 	//утечки памяти возникают если не выставить бэкэнд
 	// бэкэнд выставляется для того чтобы выбрать способ ролучения изображения
 	// автоматический бэкэнд выбирает gstreamer а с ним утечки, такой не ставим cv::CAP_GSTREAMER
-	if (source != -1)
+	int Backend = cv::CAP_V4L2;
+	if (source == -2)
 	{
-		int Backend = cv::CAP_V4L2;
+		std::string source_other;
+		fs_cv["video_source_other"] >> source_other;
+		inputVideo.open(source_other);
+	}
+	else if (source != -1)
+	{
+		
 		inputVideo.open(source,Backend);
 		int width;
 		int height;
@@ -46,13 +53,13 @@ VisionSystem::VisionSystem(const std::string configFile)
 		setVideoSize(width, height);
 	}
 	
-
-	fs_cv["camera_X"] >> cameraPosition[0];
-	fs_cv["camera_Y"] >> cameraPosition[1];
-	fs_cv["camera_Z"] >> cameraPosition[2];
-	fs_cv["camera_roll"] >> cameraOrientation[0];
-	fs_cv["camera_pitch"] >> cameraOrientation[1];
-	fs_cv["camera_yaw"] >> cameraOrientation[2];
+	// camera position in body frame
+	fs_cv["camera_X"] >> cameraBodyPosition[0];
+	fs_cv["camera_Y"] >> cameraBodyPosition[1];
+	fs_cv["camera_Z"] >> cameraBodyPosition[2];
+	fs_cv["camera_roll"] >> cameraBodyOrientation[0];
+	fs_cv["camera_pitch"] >> cameraBodyOrientation[1];
+	fs_cv["camera_yaw"] >> cameraBodyOrientation[2];
 
 	//debug
 	std::cout << "itit image source 3conf" << std::endl;
@@ -69,8 +76,8 @@ VisionSystem::~VisionSystem()
 
 void VisionSystem::setCameraPosition(Eigen::Vector3d &pose, Eigen::Vector3d &orientation)
 {
-	cameraPosition = pose;
-	cameraOrientation = orientation;
+	cameraBodyPosition = pose;
+	cameraBodyOrientation = orientation;
 }
 
 void VisionSystem::getCameraCalibration(const std::string &filename)
@@ -94,12 +101,12 @@ VectorXd VisionSystem::getCamPosition(cv::Vec3d &rvec, cv::Vec3d &tvec)
 	cv::Vec3d pose = CvMathOperations::visionPoseTransformToLocalFrame(tvec, rvec);
 	cv::Vec3d angles = CvMathOperations::rvecToEuler(rvec);
 
-	result[0] = pose[0];
-	result[1] = pose[1];
-	result[2] = pose[2];
-	result[3] = angles[0];
-	result[4] = angles[1];
-	result[5] = angles[2];
+	result[0] = pose[0] + cameraBodyPosition[0];
+	result[1] = pose[1] + cameraBodyPosition[1];
+	result[2] = pose[2] + cameraBodyPosition[2];
+	result[3] = angles[0] + cameraBodyOrientation[0];
+	result[4] = angles[1] + cameraBodyOrientation[1];
+	result[5] = angles[2] + cameraBodyOrientation[2];
 	return result;
 
 }

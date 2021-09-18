@@ -7,7 +7,7 @@
 #include 	<yaml-cpp/yaml.h>
 #include	<config.hpp>
 #include 	<types.hpp>
-#include <cvMathOperations.hpp>
+#include 	<cvMathOperations.hpp>
 
 /**
  * @brief клас хранит в себе изображение , и его параметры для обработки не используется 
@@ -25,8 +25,8 @@ class VisionSystem
 		// матрица коэффициентов дисторсии камеры(модель )
     	cv::Mat             distCoeffs;
 		//Положение и ориентаия камеры в осях связной системы координат объекта
-		Eigen::Vector3d		cameraPosition; // X Y Z (metrs)
-		Eigen::Vector3d		cameraOrientation; // roll pitch yaw (rad)
+		Eigen::Vector3d		cameraBodyPosition; // X Y Z (metrs)
+		Eigen::Vector3d		cameraBodyOrientation; // roll pitch yaw (rad)
 		/**
 		 * @brief Construct a new Vision System object
 		 * 

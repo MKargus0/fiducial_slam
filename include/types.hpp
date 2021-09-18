@@ -6,6 +6,9 @@
 #include <opencv2/aruco.hpp>
 #include <Eigen/Geometry>
 
+// #ifdef DEBUG
+#define VISUALIZATION
+
 typedef Eigen::Matrix<long double, Eigen::Dynamic, 1> 		VectorXd;
 typedef cv::Ptr<cv::aruco::Dictionary> 						arDict_t;
 typedef std::vector<cv::Vec3d>		   						vecCvVec3d_t;
