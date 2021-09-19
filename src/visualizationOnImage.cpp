@@ -1,6 +1,6 @@
 #include <visualizationOnImage.hpp>
 
-
+#ifdef VISUALIZATION
 void VisualizationOnImage::showImage(cv::Mat &image)
 {
 	cv::namedWindow("out", cv::WINDOW_NORMAL);
@@ -25,3 +25,5 @@ void VisualizationOnImage::drawMarkersAndAxes(cv::Mat &image, vec2CvPoint2f_t &c
 	cv::aruco::drawAxis(image, cameraMatrix, distCoeffs, rvec, tvec, axesSize);
 	// showImage(image);
 }
+
+#endif

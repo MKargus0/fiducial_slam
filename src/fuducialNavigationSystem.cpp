@@ -168,11 +168,13 @@ int	FiducialSlamNavigation::estimateState()
 		#ifdef VISUALIZATION
 			VisualizationOnImage::showImage(fiducialDetector->visionSysVector[i]->image,"source_" + std::to_string(i));
 			
+			#ifdef USE_PLOTTER
+			Board->showPlotWithMarkers();
+			#endif
+			
 		#endif
 
-		#ifdef USE_PLOTTER
-			Board->showPlotWithMarkers();
-		#endif
+		
 	
 	}
 	//  удаляем информацию об обнаруженных маркерах вне карты, если повторно они не появились в поле зрения
