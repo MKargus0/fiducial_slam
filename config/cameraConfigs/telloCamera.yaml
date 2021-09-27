@@ -1,0 +1,35 @@
+%YAML:1.0
+---
+calibration_time: "Wed Nov 11 20:55:49 2020"
+image_width: 600
+image_height: 480
+board_width: 9
+board_height: 6
+square_size: 1.
+aspectRatio: 1.
+flags: 2
+camera_matrix: !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data: [ 902.72647393, 0., 443.25625007, 0.,
+       903.97151463, 341.31248187, 0., 0., 1. ]
+distortion_coefficients: !!opencv-matrix
+   rows: 5
+   cols: 1
+   dt: d
+   data: [ -0.00308237, -0.55208076,
+      -0.00636092,  -0.00259996,
+       2.34889383 ]
+avg_reprojection_error: 0.0371185753469972
+
+# источник изображения
+video_source: -2
+video_source_other: "udp://192.168.11.1:11111"
+# положение камеры в связной СК
+camera_X: 0 
+camera_Y: 0
+camera_Z: 0
+camera_roll: 0
+camera_pitch: 0
+camera_yaw: 0
