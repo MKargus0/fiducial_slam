@@ -24,8 +24,10 @@ typedef	std::vector<std::vector<cv::Point3f>>				vec2CvPoint3f_t;
 typedef std::vector<int> 									vec1i_t;
 typedef std::vector <std::vector<int>> 						vec2i_t;
 typedef std::vector<double>									vec1d_t;
+typedef std::vector<std::vector<long double>>				vec2ld_t;
 typedef std::vector <cv::Ptr<cv::aruco::Dictionary>>  		vec1arDict_t;
 typedef	std::vector<VectorXd>								vec1vecXd_t;
+typedef	std::vector<std::vector<VectorXd>>					vec2vecXd_t;
 // typedef std::vector <cv::InputArray>						vec1cvInpArr_t;
 // typedef std::vector <cv::InputArrayOfArrays>				vec1cvInpArrOfArr_t;
 

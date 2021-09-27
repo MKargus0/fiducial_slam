@@ -14,7 +14,6 @@ class AnavigationSystem
 		void setLoopTime(double &loopTime);
 		double getLoopTime();
 	private:
-		
 		double		loopTime;
 		
 		

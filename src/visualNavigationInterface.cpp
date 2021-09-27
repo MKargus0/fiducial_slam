@@ -7,6 +7,7 @@ VisualNavigation::VisualNavigation(const std::string &configfile)
 	YAML::Node fs = YAML::LoadFile(configfile);
 	int sourceCount  = fs["source_count"].as<int>();
 	int useFiducial = fs["use_fiducial"].as<int>();
+	int useOpticalFlow = fs["use_optical_flow"].as<int>();
 	std::string sourceConfig;
 	// инициализируем источники изображения
 	VisionSystem* singleCam;
@@ -38,6 +39,20 @@ VisualNavigation::VisualNavigation(const std::string &configfile)
 		}
 		
 		
+	}
+	if (useOpticalFlow == 1)
+	{
+		int flowType = fs["flow_type"].as<int>();
+		double fieldOfViewAngleWidth = fs["fieldOfViewAngleWidth"].as<int>();
+		double fieldOfViewAngleHeight = fs["fieldOfViewAngleHeight"].as<int>();
+		int fieldWidth = fs["fieldWidth"].as<int>();
+		int fieldHeight = fs["fieldHeight"].as<int>();
+		if (flowType == 1)
+		{
+			flowNav = new PhaseCorr(singleCam,fieldOfViewAngleWidth, fieldOfViewAngleHeight, 
+								fieldWidth, fieldHeight);
+		}
+
 	}
 	// устанавливаем начальные условия для рассчета времени цикла работы системы 
 	currentSysTime = std::chrono::high_resolution_clock::now();
@@ -84,3 +99,4 @@ void VisualNavigation::calcSystemLoopTime()
 	lastSysTime = currentSysTime;
 	loopTime = timeStep.count();
 }
+

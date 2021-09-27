@@ -24,3 +24,12 @@ detector_type: 0
 # 2 - fiducial slam 
 fiducial_navigation_type: 2
 
+use_optical_flow: 1
+# 1 - phase corr
+# 2 - 
+flow_type: 1
+
+fieldOfViewAngleWidth: 60
+fieldOfViewAngleHeight: 60
+fieldWidth: 800
+fieldHeight: 800

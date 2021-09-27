@@ -1,13 +1,13 @@
 #ifndef		FIDUCIAL_NAVIGATION_HPP
 #define		FIDUCIAL_NAVIGATION_HPP
-#include 	<types.hpp>
-#include 	<fiducialDetector.hpp>
-#include 	<visualNavigationSystem.hpp>
-#include	<fiducialMap.hpp>
-#include	<config.hpp>
-#include	<customBoard.hpp>
-#include	<cvMathOperations.hpp>
-#include 	<mathOperations.hpp>
+#include 	"types.hpp"
+#include 	"fiducialDetector.hpp"
+#include 	"visualNavigationSystem.hpp"
+#include	"fiducialMap.hpp"
+#include	"config.hpp"
+#include	"customBoard.hpp"
+#include	"cvMathOperations.hpp"
+#include 	"mathOperations.hpp"
 #include 	<chrono>
 
 class AfiducialNavigation : public AvisualNavigationSystem
@@ -67,7 +67,13 @@ class FiducialSlamNavigation : public FiducialBoardNavigation
 		vec1i_t					unknownIds;
 		vec1i_t					unknownIdsIters;
 		vec1d_t					unknownMarkerTime;
-		vec1vecXd_t				unknownMarkerPose;
+		// vec1vecXd_t				unknownMarkerPose;
+		vec2ld_t					unknownMarkerPoseX;
+		vec2ld_t					unknownMarkerPoseY;
+		vec2ld_t					unknownMarkerPoseZ;
+		vec2ld_t					unknownMarkerPoseRoll;
+		vec2ld_t					unknownMarkerPosePitch;
+		vec2ld_t					unknownMarkerPoseYaw;
 		void 					updateMap();
 		void 					updateIdsDetectedTime(const unsigned int &cameraId);
 		void					deliteNotUpdatedMarkers();

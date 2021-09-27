@@ -1,5 +1,5 @@
 marker_count: 1 #количество маркеров в карте
-wait_time_before_marker_add: 2
+wait_time_before_marker_add: 10
 
 
 # A4 markers size
@@ -10,6 +10,7 @@ wait_time_before_marker_add: 2
 
 # gazebo sim marker
 marker_size: 0.951240 
+# marker_size: 1 
 
 axes_size: 0.5
 # marker_size_groups: [] 
@@ -26,6 +27,7 @@ axes_size: 0.5
 
 
 marker_1: [4,0,0,0,0,0,0,0,0.951240]
+# marker_1: [4,0,0,0,0,0,0,0,1]
 # базис совпадает с СК карты test_world_1
 # marker_1: [4,0,10,0,0.6,1.57079632679,0,-1.57079632679,0.951240]
 #marker_1: [4,0,0,0,0,0,0,0,0.190] # базисный маркер 

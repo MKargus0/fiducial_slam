@@ -1,7 +1,10 @@
-#pragma once
-#include <visualSystem.hpp>
-#include <types.hpp>
-#include <fuducialNavigationSystem.hpp>
+#ifndef 	VISUAL_NAVIGATION_INTERFACE_HPP
+#define		VISUAL_NAVIGATION_INTERFACE_HPP
+
+#include "visualSystem.hpp"
+#include "types.hpp"
+#include "fuducialNavigationSystem.hpp"
+#include "opticalFlowNavigationSystem.hpp"
 #include <chrono>
 // #include <sendPoseDataUDP.h>
 
@@ -14,14 +17,16 @@ class VisualNavigation
     public:
 
 		//статус навигационной системы (функцианирует / не функцианирует)
-        int                		nav_status;
+        int                			nav_status;
+		unsigned int 				flowIndex;
 		// Положение обьекта в системе координат карты
         // Eigen::Vector3d				position;
-		double							position[6];
+		double						position[6];
 		// ориентация обьекта в системе координат карты
         Eigen::Vector3d				orientationAngles;
 		Eigen::Quaterniond			orientationQuat;
 		std::vector<VisionSystem*>	camVec;
+		AopticalFlowNavigation*		flowNav;
 		/**
 		 * @brief Construct a new Visual Navigation object
 		 * 
@@ -42,8 +47,12 @@ class VisualNavigation
     	std::chrono::_V2::system_clock::time_point	lastSysTime;    // время системы 
     	std::chrono::duration<double, std::milli>	timeStep;	 // время цикла управления системы, шаг разница между текшим и предыдушим шагом
         std::vector<AnavigationSystem*>				navSystems;
+		
 		double										loopTime;   // system time step
 		void	calcSystemLoopTime();
+		// void    setFlowParams(double omegaX, double omegaY, double range);
 
 };
+
+#endif
 

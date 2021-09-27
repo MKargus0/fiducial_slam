@@ -208,12 +208,19 @@ void	FiducialSlamNavigation::updateIdsDetectedTime(const unsigned int &cameraId)
 				// добавляем в вектор время за которое маркер находился в поле зрения системы
 				unknownMarkerTime[j] += getLoopTime();
 				// суммируем данные о положении маркера в системе координат карты с целью последующего осреднения
-				unknownMarkerPose[j] += markerPoseInMap;//(unknownMarkerPose[j] + markerPoseInMap) / 2;
+				// unknownMarkerPose[j] += markerPoseInMap;//(unknownMarkerPose[j] + markerPoseInMap) / 2;
+				unknownMarkerPoseX[j].push_back(markerPoseInMap[0]);
+				unknownMarkerPoseY[j].push_back(markerPoseInMap[1]);
+				unknownMarkerPoseZ[j].push_back(markerPoseInMap[2]);
+				unknownMarkerPoseRoll[j].push_back({markerPoseInMap[3]});
+				unknownMarkerPosePitch[j].push_back({markerPoseInMap[4]});
+				unknownMarkerPoseYaw[j].push_back({markerPoseInMap[5]});
 				// увеличиваем счетчик итераций за которые была получена оценка положения маркера вне карты
 				unknownIdsIters[j] += 1;
 
+				
+				// VectorXd result = unknownMarkerPose[j] / unknownIdsIters[j];
 				// debug
-				VectorXd result = unknownMarkerPose[j] / unknownIdsIters[j];
 				#ifdef DEBUG
 				std::cout << "result" << std::endl;
 				std::cout << result << std::endl;
@@ -224,7 +231,13 @@ void	FiducialSlamNavigation::updateIdsDetectedTime(const unsigned int &cameraId)
 		// если маркер вне карты обнаружен впервые то добавляем в массив новвые комаоненты для этого объекта
 		if (markerIsNew)
 		{
-			unknownMarkerPose.push_back(markerPoseInMap);
+			// unknownMarkerPose.push_back(markerPoseInMap);
+			unknownMarkerPoseX.push_back({markerPoseInMap[0]});
+			unknownMarkerPoseY.push_back({markerPoseInMap[1]});
+			unknownMarkerPoseZ.push_back({markerPoseInMap[2]});
+			unknownMarkerPoseRoll.push_back({markerPoseInMap[3]});
+			unknownMarkerPosePitch.push_back({markerPoseInMap[4]});
+			unknownMarkerPoseYaw.push_back({markerPoseInMap[5]});
 			unknownIds.push_back(Board->unknownIds[i]);
 			unknownMarkerTime.push_back(0);
 			unknownIdsIters.push_back(1);
@@ -262,7 +275,13 @@ void FiducialSlamNavigation::deliteNotUpdatedMarkers()
 			{
 				unknownIds.erase(unknownIds.begin() + i);
 				unknownMarkerTime.erase(unknownMarkerTime.begin() + i);
-				unknownMarkerPose.erase(unknownMarkerPose.begin() + i);
+				// unknownMarkerPose.erase(unknownMarkerPose.begin() + i);
+				unknownMarkerPoseX.erase(unknownMarkerPoseX.begin() + i);
+				unknownMarkerPoseY.erase(unknownMarkerPoseY.begin() + i);
+				unknownMarkerPoseZ.erase(unknownMarkerPoseZ.begin() + i);
+				unknownMarkerPoseRoll.erase(unknownMarkerPoseRoll.begin() + i);
+				unknownMarkerPosePitch.erase(unknownMarkerPosePitch.begin() + i);
+				unknownMarkerPoseYaw.erase(unknownMarkerPoseYaw.begin() + i);
 				unknownIdsIters.erase(unknownIdsIters.begin() + i);
 			}
 		}
@@ -348,17 +367,84 @@ void	FiducialSlamNavigation::updateMap()
 			// std::cout << "unknownMarkerPose" << std::endl;
 			// std::cout << unknownMarkerPose[i] << std::endl;
 			// усредняем результаты измерений положения маркера вне карты
-			VectorXd result = unknownMarkerPose[i] / unknownIdsIters[i];
-			#ifdef DEBUG
-			std::cout << "finalResult" << std::endl;
+			// VectorXd result = unknownMarkerPose[i] / unknownIdsIters[i];
+			std::sort(unknownMarkerPoseX[i].begin(), unknownMarkerPoseX[i].end());
+			std::sort(unknownMarkerPoseY[i].begin(), unknownMarkerPoseY[i].end());
+			std::sort(unknownMarkerPoseZ[i].begin(), unknownMarkerPoseZ[i].end());
+			std::sort(unknownMarkerPoseRoll[i].begin(), unknownMarkerPoseRoll[i].end());
+			std::sort(unknownMarkerPosePitch[i].begin(), unknownMarkerPosePitch[i].end());
+			std::sort(unknownMarkerPoseYaw[i].begin(), unknownMarkerPoseYaw[i].end());
+
+			// #ifdef DEBUG
+			std::cout << "ResultmedianX" << std::endl;
+			for(unsigned int k = 0; k < unknownMarkerPoseX[i].size(); k++)
+			{
+				std::cout << unknownMarkerPoseX[i][k] << " , ";
+			}
+			std::cout << " " << std::endl;
+
+			std::cout << "ResultmedianY" << std::endl;
+			for(unsigned int k = 0; k < unknownMarkerPoseY[i].size(); k++)
+			{
+				std::cout << unknownMarkerPoseY[i][k] << " , ";
+			}
+			std::cout << " " << std::endl;
+
+			std::cout << "ResultmedianZ" << std::endl;
+			for(unsigned int k = 0; k < unknownMarkerPoseZ[i].size(); k++)
+			{
+				std::cout << unknownMarkerPoseZ[i][k] << " , ";
+			}
+			std::cout << " " << std::endl;
+
+
+			std::cout << "ResultmedianRoll" << std::endl;
+			for(unsigned int k = 0; k < unknownMarkerPoseRoll[i].size(); k++)
+			{
+				std::cout << unknownMarkerPoseRoll[i][k] << " , ";
+			}
+			std::cout << " " << std::endl;
+
+
+			std::cout << "ResultmedianPitch" << std::endl;
+			for(unsigned int k = 0; k < unknownMarkerPosePitch[i].size(); k++)
+			{
+				std::cout << unknownMarkerPosePitch[i][k] << " , ";
+			}
+			std::cout << " " << std::endl;
+
+
+			std::cout << "ResultmedianYaw" << std::endl;
+			for(unsigned int k = 0; k < unknownMarkerPoseYaw[i].size(); k++)
+			{
+				std::cout << unknownMarkerPoseYaw[i][k] << " , ";
+			}
+			std::cout << std::endl;
+			// #endif
+
+			VectorXd result(6);
+			result[0] = unknownMarkerPoseX[i][ceil(unknownMarkerPoseX[i].size()/2)-1];
+			result[1] = unknownMarkerPoseY[i][ceil(unknownMarkerPoseY[i].size()/2)-1];
+			result[2] = unknownMarkerPoseZ[i][ceil(unknownMarkerPoseZ[i].size()/2)-1];
+			result[3] = unknownMarkerPoseRoll[i][ceil(unknownMarkerPoseRoll[i].size()/2)-1];
+			result[4] = unknownMarkerPosePitch[i][ceil(unknownMarkerPosePitch[i].size()/2)-1];
+			result[5] = unknownMarkerPoseYaw[i][ceil(unknownMarkerPoseYaw[i].size()/2)-1];
+			// #ifdef DEBUG
+			std::cout << "finalResultmedian" << std::endl;
 			std::cout << result << std::endl;
-			#endif
+			// #endif
 			// добавляем маркер в карту
 			Board->addMarkerToMap(unknownIds[i], markerSize, result);
 			// очищаем массивы т к теперь этот маркер в карте
 			unknownIds.erase(unknownIds.begin() + i);
 			unknownMarkerTime.erase(unknownMarkerTime.begin() + i);
-			unknownMarkerPose.erase(unknownMarkerPose.begin() + i);
+			// unknownMarkerPose.erase(unknownMarkerPose.begin() + i);
+			unknownMarkerPoseX.erase(unknownMarkerPoseX.begin() + i);
+			unknownMarkerPoseY.erase(unknownMarkerPoseY.begin() + i);
+			unknownMarkerPoseZ.erase(unknownMarkerPoseZ.begin() + i);
+			unknownMarkerPoseRoll.erase(unknownMarkerPoseRoll.begin() + i);
+			unknownMarkerPosePitch.erase(unknownMarkerPosePitch.begin() + i);
+			unknownMarkerPoseYaw.erase(unknownMarkerPoseYaw.begin() + i);
 			unknownIdsIters.erase(unknownIdsIters.begin() + i);
 		}
 	}
