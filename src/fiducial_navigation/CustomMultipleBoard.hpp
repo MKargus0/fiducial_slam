@@ -26,6 +26,11 @@ class CustomMultipleBoard
 							const double &boardZ,const double &roll, const double &pitch,const double &yaw);
 		void addMarkerToMap(const unsigned int &markerId, const double &markerSize, VectorXd_t &markerPose);
 		void addMarkerToBoard(cv::InputArray &rejected_candidate, const unsigned int &markerId);
+		void writeMapDataToFile();
+		#ifdef	USE_PLOTTER
+			void showPlotWithMarkers();
+		#endif
+		std::ofstream           mapFile_;
 		cv::Mat					objPointsMat;
 		cv::Mat 				imgPointsMat;
 		vec2CvPoint3f_t 		objPoints;
@@ -33,10 +38,6 @@ class CustomMultipleBoard
 		vec1i_t					unknownIds;
 		vec2CvPoint2f_t			unKnownCorners;
 		unsigned int 			dictionaryCount;
-		void writeMapDataToFile();
-		#ifdef	USE_PLOTTER
-			void showPlotWithMarkers();
-		#endif
 
 	protected:
 		void updateDataMap(const unsigned int &markerId,vec1CvPoint2f_t &markerCorners);
@@ -49,8 +50,7 @@ class CustomMultipleBoard
 			vec1d_t				dataZ;
 			int					markerPlotIndex;
 		#endif
-		std::ofstream mapFile; // out file stream
-			
+
 };
 
 #endif

@@ -1,27 +1,27 @@
 #include "FiducialDetector.hpp"
 
-AfiducialDetector::AfiducialDetector(std::vector<VisionSystem*>	&visionSysVector)
+AFiducialDetector::AFiducialDetector(std::vector<VisionSystem*>	&visionSysVector)
 {
 	this->visionSysVector = visionSysVector;
 }
 
-AfiducialDetector::~AfiducialDetector()
+AFiducialDetector::~AFiducialDetector()
 {
 	//очищаем память
-	for (unsigned int i = 0; i < visionSysVector.size(); i++)
-		delete visionSysVector[i];
+	for (auto & i : visionSysVector)
+		delete i;
 	
 }
 
 ArucoDetector::ArucoDetector(std::vector<VisionSystem*>	&visionSysVector, const std::string &configFile)
-	: AfiducialDetector(visionSysVector)
+	: AFiducialDetector(visionSysVector)
 {
 	//создаем экзмпляр класса параметров обнаружения опорных маркеров
-	detectorParametrs = cv::aruco::DetectorParameters::create();
+	detectorParameters_ = cv::aruco::DetectorParameters::create();
 	setDicts(configFile);
 }
 
-void ArucoDetector::detectFidusial()
+void ArucoDetector::detectFiducial()
 {
 	detectorStatus = false;
 	vec1i_t						markerIds;
@@ -29,16 +29,16 @@ void ArucoDetector::detectFidusial()
 	
 	cornersList.clear();
 	idsList.clear();
-	for(unsigned int i = 0; i < visionSysVector.size(); i++)
+	for (auto & i : visionSysVector)
 	{
 		ids.clear();
 		corners.clear();
 		// visionSysVector[i]->inputVideo >> visionSysVector[i]->image;
-		if (!visionSysVector[i]->image.empty())
+		if (!i->image.empty())
 		{
-			for (unsigned int j = 0; j < dictionaryList.size(); j++)
+			for (unsigned int j = 0; j < dictionaryList_.size(); j++)
 			{
-				cv::aruco::detectMarkers(visionSysVector[i]->image, dictionaryList[j], markerCorners, markerIds, detectorParametrs);
+				cv::aruco::detectMarkers(i->image, dictionaryList_[j], markerCorners, markerIds, detectorParameters_);
 				if (markerIds.size() != 0)
 				{
 					addIdsAndCorners(markerIds, markerCorners, j);
@@ -52,7 +52,7 @@ void ArucoDetector::detectFidusial()
 	}
 }
 
-void AfiducialDetector::addIdsAndCorners(vec1i_t &markerIds, vec2CvPoint2f_t &corners, const unsigned int &index)
+void AFiducialDetector::addIdsAndCorners(vec1i_t &markerIds, vec2CvPoint2f_t &corners, const unsigned int &index)
 {
 	for (unsigned int i = 0; i < markerIds.size(); i++)
 	{
@@ -73,7 +73,7 @@ void ArucoDetector::setDicts(const std::string &dictionaryConfigFile)
 		return;
 	}
 	//	устанавливаем размерность вектора словарей
-	dictionaryList.resize(dictSizes.size());
+	dictionaryList_.resize(dictSizes.size());
 	//	устанавливаем размерность вектора идентификаторов реперных маркеров
 	idsList.resize(dictSizes.size());
 	//	устанавливаем размерность вектора угловых точек
@@ -84,137 +84,137 @@ void ArucoDetector::setDicts(const std::string &dictionaryConfigFile)
 	{
 		switch (dictsMarkersBitSize[i])
 		{
-			case 4:
+			case ArucoBitSizes::ARUCO_4:
 				dictNumList.push_back(0);
             	switch (dictSizes[i])
 				{
 					
-					case 50:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
+					case DictSizes::MARKERS_50:
+                        dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
 						break;
-					case 100:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_100);
+					case DictSizes::MARKERS_100:
+                        dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_100);
 						break;
-					case 250:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_250);
+					case DictSizes::MARKERS_250:
+                        dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_250);
 						break;
-					case 1000:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_1000);
+					case DictSizes::MARKERS_1000:
+                        dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_1000);
 						break;
 					default:
                     	std::cout << "Error dict_size for bit_size" << " is not correct"<< std::endl; 
 				}
 				break;
-			case 5:
-				dictNumList.push_back(1000);
+			case ArucoBitSizes::ARUCO_5:
+				dictNumList.push_back(ArucoBitSizes::ARUCO_4 * dictArucoNumStep);
 				switch (dictSizes[i])
 				{
-					case 50:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_5X5_50);
+					case DictSizes::MARKERS_50:
+                        dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_5X5_50);
 						break;
-					case 100:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_5X5_100);
+					case DictSizes::MARKERS_100:
+                        dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_5X5_100);
 						break;
-					case 250:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_5X5_250);
+					case DictSizes::MARKERS_250:
+                        dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_5X5_250);
 						break;
-					case 1000:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_5X5_1000);
+					case DictSizes::MARKERS_1000:
+                        dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_5X5_1000);
 						break;
 					default:
                     	std::cout << "Error dict_size for bit_size" << " is not correct"<< std::endl; 
 				}
 				break;
-			case 6:
+			case ArucoBitSizes::ARUCO_6:
 				dictNumList.push_back(2000);
 				switch (dictSizes[i])
 				{
-					case 50:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_50);
+					case DictSizes::MARKERS_50:
+                      dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_50);
 						break;
-					case 100:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_100);
+                    case DictSizes::MARKERS_100:
+                      dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_100);
 						break;
-					case 250:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
+                    case DictSizes::MARKERS_250:
+                      dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_250);
 						break;
-					case 1000:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_1000);
+					case DictSizes::MARKERS_1000:
+                      dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_6X6_1000);
 						break;
 					default:
                     	std::cout << "Error dict_size for bit_size" << " is not correct"<< std::endl; 
 				}
 				break;
-			case 7:
+			case ArucoBitSizes::ARUCO_7:
 				dictNumList.push_back(3000);
 				switch (dictSizes[i])
 				{
-					case 50:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_7X7_50);
+					case DictSizes::MARKERS_50:
+                        dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_7X7_50);
 						break;
-					case 100:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_7X7_100);
+					case DictSizes::MARKERS_100:
+                        dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_7X7_100);
 						break;
-					case 250:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_7X7_250);
+					case DictSizes::MARKERS_250:
+                        dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_7X7_250);
 						break;
-					case 1000:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_7X7_1000);
+					case DictSizes::MARKERS_1000:
+                        dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_7X7_1000);
 						break;
 					default:
                     	std::cout << "Error dict_size for bit_size" << " is not correct"<< std::endl; 
 				}
 				break;
-			case 1:
+			case ArucoBitSizes::ARUCO_ORIG:
 				dictNumList.push_back(4000);
 				switch (dictSizes[i])
 				{
 					case 0:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_ARUCO_ORIGINAL);
+                      dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_ARUCO_ORIGINAL);
 						break;
 					default:
                     	std::cout << "Error dict_size for bit_size" << " is not correct"<< std::endl; 
 				}
 				break;
-			case 16:
+			case ArucoBitSizes::APRILTAG_16:
 				dictNumList.push_back(5000);
 				switch (dictSizes[i])
 				{
 					case 0:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_APRILTAG_16h5);
+                      dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_APRILTAG_16h5);
 						break;
 					default:
                     	std::cout << "Error dict_size for bit_size" << " is not correct"<< std::endl; 
 				}
 				break;
-			case 25:
+			case ArucoBitSizes::APRILTAG_25:
 				dictNumList.push_back(6000);
 				switch (dictSizes[i])
 				{
 					case 0:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_APRILTAG_25h9);
+                      dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_APRILTAG_25h9);
 						break;
 					default:
                     	std::cout << "Error dict_size for bit_size" << " is not correct"<< std::endl; 
 				}
 				break;
-			case 3610:
+			case ArucoBitSizes::APRILTAG_36H10:
 				dictNumList.push_back(7000);
 				switch (dictSizes[i])
 				{
 					case 0:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_APRILTAG_36h10);
+                      dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_APRILTAG_36h10);
 						break;
 					default:
                     	std::cout << "Error dict_size for bit_size" << " is not correct"<< std::endl; 
 				}
 				break;
-			case 3611:
+			case ArucoBitSizes::APRILTAG_36H11:
 				dictNumList.push_back(8000);
 				switch (dictSizes[i])
 				{
 					case 0:
-						dictionaryList[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_APRILTAG_36h11);
+                      dictionaryList_[i] = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_APRILTAG_36h11);
 						break;
 					default:
                     	std::cout << "Error dict_size for bit_size" << " is not correct"<< std::endl; 

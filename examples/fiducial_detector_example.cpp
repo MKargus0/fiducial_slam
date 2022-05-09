@@ -21,7 +21,7 @@ int main()
 
   while(true)
   {
-      arDet.detectFidusial();
+    arDet.detectFiducial();
       char key = (char) cv::waitKey(30);
           if (key == 27)
               break;

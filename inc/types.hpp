@@ -31,8 +31,7 @@ typedef std::vector<std::vector<long double>>				vec2ld_t;
 typedef std::vector <cv::Ptr<cv::aruco::Dictionary>>  		vec1arDict_t;
 typedef	std::vector<VectorXd_t>								vec1vecXd_t;
 typedef	std::vector<std::vector<VectorXd_t>>				vec2vecXd_t;
-// typedef std::vector <cv::InputArray>						vec1cvInpArr_t;
-// typedef std::vector <cv::InputArrayOfArrays>				vec1cvInpArrOfArr_t;
+
 
 
 #endif

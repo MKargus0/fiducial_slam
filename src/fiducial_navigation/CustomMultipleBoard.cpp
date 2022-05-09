@@ -7,7 +7,7 @@ CustomMultipleBoard::CustomMultipleBoard(const unsigned int &dictionaryCount)
 	ids.clear();
 	this->dictionaryCount = dictionaryCount;
 
-	// mapFile.open("/home/argus/anish.txt");
+	// mapFile_.open("/home/argus/anish.txt");
 
 	#ifdef USE_PLOTTER
 		plot.size(800,800);
@@ -139,17 +139,17 @@ void CustomMultipleBoard::addMarkerToMap(const unsigned int &markerId, const dou
 {
 	// запись данных о ориентацци положении,индексе в файл
 
-	mapFile.open("/home/argus/testForTello.txt",std::ios::in | std::ios::out | std::ios::ate);
-	mapFile << "marker_" + std::to_string(this->ids.size() + 1) + ": ";
-	mapFile << "[" + std::to_string(markerId) +",";
-	mapFile << std::to_string(boardX) + ",";
-	mapFile << std::to_string(boardY) + ",";
-	mapFile << std::to_string(boardZ) + ",";
-	mapFile << std::to_string(roll)   + ",";
-	mapFile << std::to_string(pitch)  + ",";
-	mapFile << std::to_string(yaw)    + ",";
-	mapFile << std::to_string(markerSize) +"]" << std::endl;
-	mapFile.close();
+	mapFile_.open("/home/argus/testForTello.txt", std::ios::in | std::ios::out | std::ios::ate);
+	mapFile_ << "marker_" + std::to_string(this->ids.size() + 1) + ": ";
+	mapFile_ << "[" + std::to_string(markerId) +",";
+	mapFile_ << std::to_string(boardX) + ",";
+	mapFile_ << std::to_string(boardY) + ",";
+	mapFile_ << std::to_string(boardZ) + ",";
+	mapFile_ << std::to_string(roll)   + ",";
+	mapFile_ << std::to_string(pitch)  + ",";
+	mapFile_ << std::to_string(yaw)    + ",";
+	mapFile_ << std::to_string(markerSize) +"]" << std::endl;
+	mapFile_.close();
 
 	// Получаем положение угловых точек в СК маркера
 	vec1CvPoint3f_t     markerCorners;
@@ -186,17 +186,17 @@ void CustomMultipleBoard::addMarkerToMap(const unsigned int &markerId, const dou
 void CustomMultipleBoard::addMarkerToMap(const unsigned int &markerId, const double &markerSize, VectorXd_t &markerPose)
 {
 	// запись данных о ориентаци положении,индексе в файл
-	mapFile.open("/home/argus/anish.txt",std::ios::in | std::ios::out | std::ios::ate);
-	mapFile << "marker_" + std::to_string(this->ids.size() + 1) + ": ";
-	mapFile << "[" + std::to_string(markerId) +",";
-	mapFile << std::to_string(markerPose[0]) + ",";
-	mapFile << std::to_string(markerPose[1]) + ",";
-	mapFile << std::to_string(markerPose[2]) + ",";
-	mapFile << std::to_string(markerPose[3])   + ",";
-	mapFile << std::to_string(markerPose[4])  + ",";
-	mapFile << std::to_string(markerPose[5])    + ",";
-	mapFile << std::to_string(markerSize) +"]" << std::endl;
-	mapFile.close();
+	mapFile_.open("/home/argus/anish.txt", std::ios::in | std::ios::out | std::ios::ate);
+	mapFile_ << "marker_" + std::to_string(this->ids.size() + 1) + ": ";
+	mapFile_ << "[" + std::to_string(markerId) +",";
+	mapFile_ << std::to_string(markerPose[0]) + ",";
+	mapFile_ << std::to_string(markerPose[1]) + ",";
+	mapFile_ << std::to_string(markerPose[2]) + ",";
+	mapFile_ << std::to_string(markerPose[3])   + ",";
+	mapFile_ << std::to_string(markerPose[4])  + ",";
+	mapFile_ << std::to_string(markerPose[5])    + ",";
+	mapFile_ << std::to_string(markerSize) +"]" << std::endl;
+	mapFile_.close();
 
 	// Получаем положение угловых точек в СК маркера
 	vec1CvPoint3f_t     markerCorners;

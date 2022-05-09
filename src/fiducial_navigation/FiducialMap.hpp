@@ -12,18 +12,18 @@
 
 using namespace std;
 
-class fiducialMap
+class FiducialMap
 {
     public:
         
-        fiducialMap(int startmarker);
-        ~fiducialMap();
+        FiducialMap(int startmarker);
+        ~FiducialMap();
         void loadMap(string filename);
         void writeMap(string filename);
         void showMap();
-        void addFiducialToMap(Eigen::Vector3d &position, Eigen::Vector3d &orientation,
-                                double &markerSize,int &markerId,
-                                 int markerBitSize,const char *markerType = "ARUCO");
+        void addFiducialToMap(Eigen::Vector3d& position, Eigen::Vector3d& orientation,
+                              double markerSize, int markerId,
+                              int markerBitSize, const char *markerType = "ARUCO");
 		void checkNewMarker();
     private:
         struct fiducialMarker

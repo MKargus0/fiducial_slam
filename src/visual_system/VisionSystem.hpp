@@ -51,7 +51,7 @@ class VisionSystem
 		 * 
 		 * @param configFile 
 		 */
-		VisionSystem(const std::string configFile);
+		explicit VisionSystem(const std::string &configFile);
 		/**
 		 * @brief Destroy the Vision System object
 		 * закрывает источник видео на чтение, и закрывает все окна если они были открыты
@@ -59,7 +59,7 @@ class VisionSystem
     	~VisionSystem();
 		/**
 		 * @brief Set the Camera Position object
-		 * 
+		 *
 		 * @param pose 
 		 * @param orientation 
 		 */

@@ -12,14 +12,37 @@
 #include 	"VisionSystem.hpp"
 #include 	"VisualizationOnImage.hpp"
 
-class AfiducialDetector 
+enum DictSizes
+{
+    MARKERS_50 = 50,
+    MARKERS_100 = 100,
+    MARKERS_250 = 250,
+    MARKERS_1000 = 1000
+};
+
+enum ArucoBitSizes
+{
+  ARUCO_4 = 4,
+  ARUCO_5 = 5,
+  ARUCO_6 = 6,
+  ARUCO_7 = 7,
+  ARUCO_ORIG = 1,
+  APRILTAG_16 = 16,
+  APRILTAG_25 = 25,
+  APRILTAG_36H10 = 3610,
+  APRILTAG_36H11 = 3611
+};
+
+const unsigned int dictArucoNumStep = 1000;
+
+class AFiducialDetector
 {
 	public:
-		AfiducialDetector(std::vector<VisionSystem*>	&visionSysVector);
-		~AfiducialDetector();
-		virtual void detectFidusial() = 0;
-		int   				detectedFiducialCount;
-		bool  				detectorStatus;
+		explicit AFiducialDetector(std::vector<VisionSystem*>	&visionSysVector);
+		~AFiducialDetector();
+		virtual void detectFiducial() = 0;
+		int   				detectedFiducialCount{};
+		bool  				detectorStatus{};
 		// вектор идентификаторов реперных маркеров
 		// содержит в себе номера обнаруженных на изображении маркеров
 		vec2i_t				idsList;
@@ -42,26 +65,23 @@ class AfiducialDetector
 };
 
 
-class ArucoDetector : public AfiducialDetector
+class ArucoDetector : public AFiducialDetector
 {
 	public:
 		ArucoDetector(std::vector<VisionSystem*>   &visionSysVector, const std::string &configFile);
 		~ArucoDetector() = default;
-		void detectFidusial() override;
+		void detectFiducial() override;
 	private:
-		void updateParametrsFromCongig(const std::string &detectorParametrsConfigFile);
 		void setDicts(const std::string &dictionaryConfigFile);
+		// void updateParametrsFromConfig(const std::string &detectorParametrsConfigFile);
 		// вектор словарей опорных маркеров
 		// словарь - класс содержащий  в себе бинарные матрицы 
 		// описывающие сигнатуру каждого опорного маркера
 		// каждый маркер имеет свою уникальную структуру
-		vec1arDict_t				  	dictionaryList;
+		vec1arDict_t				  	dictionaryList_;
 		// параметры алгоритма обнаружения опорных маркеров
-		cvDetParams_t 					detectorParametrs;
-		
+		cvDetParams_t 					detectorParameters_;
+
 };
-
-
-
 
 #endif

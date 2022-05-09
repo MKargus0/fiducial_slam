@@ -17,7 +17,7 @@ VisionSystem::VisionSystem(const unsigned int &videoSource, const unsigned int &
 	std::cout << "itit image source 2conf" << std::endl;
 }
 
-VisionSystem::VisionSystem(const std::string configFile)
+VisionSystem::VisionSystem(const std::string &configFile)
 {
 	getCameraCalibration(configFile);
 

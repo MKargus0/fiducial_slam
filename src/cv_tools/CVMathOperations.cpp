@@ -4,7 +4,7 @@ cv::Vec3d				CvMathOperations::rvecToEuler(cv::Vec3d &rvec)
 {
     cv::Vec3d   result;
 	cv::Mat     rodr;
-	// переводим вектор вращения(rvec) в матрицу поворота
+	// переводим вектор вращения(rVec_) в матрицу поворота
     cv::Rodrigues(rvec, rodr);
     float sy = sqrt(rodr.at<double>(0,0) * rodr.at<double>(0,0) +  rodr.at<double>(1,0) * rodr.at<double>(1,0) );
     bool singular = sy < 1e-6;

@@ -30,12 +30,14 @@ VisualNavigation::VisualNavigation(const std::string &configfile)
 		ANavigationSystem* navSys;
 		if (fiducialNavigationType == 1)
 		{
-			navSys = new FiducialBoardNavigation(detectorType, camVec_, detectorConfig, boardConfig);
+			navSys = new FiducialBoardNavigation(detectorType, camVec_,
+                                                 detectorConfig, boardConfig);
 			navSystems_.push_back(navSys);
 		}
 		else if (fiducialNavigationType == 2)
 		{
-			navSys = new FiducialSlamNavigation(detectorType, camVec_, detectorConfig, boardConfig);
+			navSys = new FiducialSlamNavigation(detectorType, camVec_,
+                                                detectorConfig, boardConfig);
 			navSystems_.push_back(navSys);
 		}
 		
@@ -57,22 +59,21 @@ void VisualNavigation::estimatePosition()
 	// рассчитываем время цикла работы системы
 	calcSystemLoopTime();
 	// получаем изображения со всех устройств
-	for (unsigned int i = 0; i < camVec_.size(); i++)
+	for (auto & i : camVec_)
 	{
-		camVec_[i]->updateImage();
+		i->updateImage();
 	}
 	// оцениваем положение для всех навигационных систем
-	for (unsigned i = 0; i < navSystems_.size(); i++)
+	for (auto & navSystem : navSystems_)
 	{
-		navStatus_ = navSystems_[i]->estimateState();
-		navSystems_[i]->setLoopTime(loopTime_);
+		navStatus_ = navSystem->estimateState();
+		navSystem->setLoopTime(loopTime_);
 	}
 	// TODO объединение решений для нескольких камер
 	if(navStatus_ == 1)
 	{
 		stateVector_ = navSystems_[0]->getStateVector();
 	}
-	
 	// sendMessageUDP(position);
 }
 
