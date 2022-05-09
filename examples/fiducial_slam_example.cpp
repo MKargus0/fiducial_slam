@@ -1,12 +1,12 @@
-#include <fuducialNavigationSystem.hpp>
+#include "FiducialNavigationSystem.hpp"
 
 #define ENABLE_QUIT_FROM_WINDOW
 
 int main()
 {
-	std::string camConfig = "/home/argus/projects/visual_navigation/config/cameraConfigs/ocamFIsheyeConfig2.yaml";
-	std::string boardConfig = "/home/argus/projects/visual_navigation_new/config/fiducialBoards/board_2.yaml";
-	std::string detectorConfig = "/home/argus/projects/visual_navigation/config/fiducialDetectorConfigs/dictionaryConfigARUCO.yaml";
+	std::string camConfig = "../config/cameraConfigs/ocamFIsheyeConfig2.yaml";
+	std::string boardConfig = "..config/fiducialBoards/board_2.yaml";
+	std::string detectorConfig = "../config/fiducialDetectorConfigs/dictionaryConfigARUCO.yaml";
 
 	std::vector<VisionSystem*> camVec;
 	VisionSystem* singleCam;

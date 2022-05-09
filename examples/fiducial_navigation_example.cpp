@@ -1,4 +1,4 @@
-#include <fuducialNavigationSystem.hpp>
+#include "FiducialNavigationSystem.hpp"
 
 #define ENABLE_QUIT_FROM_WINDOW
 int main()

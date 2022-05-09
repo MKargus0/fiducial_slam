@@ -30,7 +30,15 @@
 *.exe
 *.out
 *.app
+
+#other
+*.bac
+*.drawio
+*.tar.gz
+
 #dir
 build/
+cmake-build-debug/
 .vscode/
+.idea/
 

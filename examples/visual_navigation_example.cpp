@@ -1,10 +1,10 @@
-#include <visualNavigationInterface.hpp>
+#include "VisualNavigation.hpp"
 
 // #define ENABLE_QUIT_FROM_WINDOW
 
 int main()
 {
-	std::string config = "/home/argus/projects/visual_navigation/config/navigation_system_config.yaml";
+	std::string config = "../config/navigation_system_config.yaml";
 
 	VisualNavigation visNavInterface(config);
 
@@ -16,11 +16,6 @@ int main()
     	std::chrono::duration<double, std::milli> timeStep;	 // время цикла управления системы, шаг разница между текшим и предыдушим шагом
 		currentSysTime = std::chrono::high_resolution_clock::now();
 		lastSysTime = currentSysTime;
-
-		for (unsigned int i = 0; i < visNavInterface.camVec.size(); i++)
-		{
-			visNavInterface.camVec[i]->updateImage();
-		}
 
 		visNavInterface.estimatePosition();
 		char key = (char) cv::waitKey(1);
