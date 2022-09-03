@@ -12,7 +12,7 @@ https://user-images.githubusercontent.com/48154519/167446310-779020d2-61e8-4586-
 
 
 ## Usage of multiple cameras
-### Multiple camera source can be used for pode estimation
+### Multiple camera source can be used for pose estimation
 
 ![Screenshot from 2021-05-19 21-50-59](https://user-images.githubusercontent.com/48154519/167449729-ecb1cff0-330f-4097-a97b-d9f1f3c73dc2.png)
 ### Multi-camera navigation can only be used if the field of view of the cameras does not overlap!!!
